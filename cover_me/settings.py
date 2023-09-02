@@ -10,20 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    ALLOWED_ORIGINS=(list, []),
+    DATABASE_ENGINE=(str, "django.db.backends.sqlite3"),
+    DATABASE_NAME=(str, BASE_DIR / "db.sqlite3"),
+    DATABASE_USER=(str, ""),
+    DATABASE_PASSWORD=(str, ""),
+    DATABASE_HOST=(str, ""),
+    DATABASE_PORT=(int, 5432),
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l0&ej$5*&f931c_d#))k+$%t)=uoe&f_)=k3zh7+u7ypb*59t-'
+SECRET_KEY = 'SECRET_KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = []
 
