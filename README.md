@@ -8,10 +8,9 @@ run: python manage.py runserver
 
 ## TODO
 
-DONE: However I would like to add email verification later in the future...
-User Registration: While Django provides built-in views for login and logout, you might want to add a user registration system so that new users can sign up. This involves creating a registration form, view, and template.
+DONE: User Registration, However I would like to add email verification later in the future...
 
-Resume Uploading: Implement a feature allowing users to upload their resumes. This will involve creating a form for file uploads, a view to handle the form submission, and updating the Resume model to store the uploaded files.
+Resume Uploader: for the most part finished, just need add resume to database
 
 Job Scraper Integration: If your scraper is ready, integrate it so that it runs after a user uploads their resume. The scraped job postings can be stored in the JobPost model.
 
