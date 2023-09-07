@@ -1,0 +1,9 @@
+<ul>
+    {% for job in jobs %}
+        <li>
+            <strong>Company:</strong> {{ job.companyName }}<br>
+            <strong>Description:</strong> {{ job.description|safe }}<br>
+            <a href="{{ job.companyOverviewLink }}" target="_blank">Company Overview</a>
+        </li>
+    {% endfor %}
+</ul>
