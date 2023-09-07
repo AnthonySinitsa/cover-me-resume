@@ -8,8 +8,8 @@
 # import asyncio-NEEDED FOR TESTING
 import json
 from pathlib import Path
-from .indeed import BASE_CONFIG
-import web_app.scrapers.indeed_scraper.indeed as indeed
+from indeed_scraper.indeed import BASE_CONFIG
+import indeed_scraper.indeed as indeed
 import asyncio
 
 # Change this to your absolute path
@@ -17,9 +17,9 @@ output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
 
 # UNCOMMENT THESE FOR TESTING THIS FILE
-# job_specification = input('Enter job role: ')
-# job_specification = job_specification.replace(" ", "+")
-# location = input('Enter a location: ')
+job_specification = input('Enter job role: ')
+job_specification = job_specification.replace(" ", "+")
+location = input('Enter a location: ')
 
 async def run(job_specification, location):
   # enable scrapfly cache for basic use
@@ -40,5 +40,5 @@ async def run(job_specification, location):
   output.joinpath("jobs.json").write_text(json.dumps(result_jobs, indent=2, ensure_ascii=False))
 
 # UNCOMMENT THESE FOR TESTING THIS FILE
-# if __name__ == "__main__":
-#   asyncio.run(run(job_specification, location))
+if __name__ == "__main__":
+  asyncio.run(run(job_specification, location))

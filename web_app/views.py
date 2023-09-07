@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
 from .models import Resume
+import json
 
 class HomePageView(LoginRequiredMixin, TemplateView):
   template_name = 'home.html'
@@ -50,3 +51,4 @@ def job_search(request):
     # Redirect to results page after scraping
     return redirect('job_results')
   return render(request, 'job_search.html')
+
