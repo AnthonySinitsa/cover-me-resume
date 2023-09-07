@@ -8,8 +8,8 @@
 # import asyncio-NEEDED FOR TESTING
 import json
 from pathlib import Path
-from scrapers.indeed_scraper.indeed import BASE_CONFIG
-import indeed_scraper.indeed as indeed
+from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
+import web_app.scrapers.indeed_scraper.indeed as indeed
 import asyncio
 
 # Change this to your absolute path
