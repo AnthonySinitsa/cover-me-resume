@@ -2,7 +2,7 @@
 
 # https://github.com/scrapfly/scrapfly-scrapers/tree/main/indeed-scraper
 # To run this scraper set env variable $SCRAPFLY_KEY with your scrapfly API key:
-# $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
+# $export SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
 import json, math, os, re
 from typing import Dict, List
 import urllib
