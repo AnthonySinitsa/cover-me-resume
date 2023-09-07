@@ -52,3 +52,20 @@ def job_search(request):
     return redirect('job_results')
   return render(request, 'job_search.html')
 
+def job_results(request):
+  # Step 1: Reading the JSON File
+  with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
+    job_data = json.load(file)
+
+  # Step 2: Extracting the Relevant Data
+  jobs_list = []
+  for job in job_data:
+    job_info = {
+      "description": job["description"],
+      "companyName": job["companyName"],
+      "companyOverviewLink": job["companyOverviewLink"]
+    }
+    jobs_list.append(job_info)
+
+  # Step 3: Passing the Data to the Template
+  return render(request, 'job_results.html', {'jobs': jobs_list})
