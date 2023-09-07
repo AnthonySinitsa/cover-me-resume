@@ -5,9 +5,12 @@ from django.db import models
 from django.conf import settings
 
 class Resume(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    resume_text = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    resume_file = models.FileField(upload_to='resumes/', null=True, blank=True) # Defines where the files will be uploaded
     uploaded_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"{self.user.username}'s Resume"
 
 class JobPost(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -21,10 +24,3 @@ class CoverLetter(models.Model):
     job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     content = models.TextField()
     generated_at = models.DateTimeField(default=timezone.now)
-
-class Resume(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    resume_file = models.FileField(upload_to='resumes/', null=True, blank=True) # Defines where the files will be uploaded
-    
-    def __str__(self):
-        return f"{self.user.username}'s Resume"
