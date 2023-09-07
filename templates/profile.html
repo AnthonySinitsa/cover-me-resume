@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Uploaded Resumes:</h2>
+<ul>
+    {% for resume in resumes %}
+        <li>
+            <a href="{{ resume.resume_file.url }}">{{ resume.resume_file.name }}</a>
+            <!-- Link to download or view the resume -->
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
