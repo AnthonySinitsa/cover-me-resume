@@ -12,6 +12,8 @@ DONE: User Registration, However I would like to add email verification later in
 
 Resume Uploader: for the most part finished, just need add resume to database
 
+Add a profile page that will display all the resumes user has entered, and shows all the cover letters generated.
+
 Job Scraper Integration: If your scraper is ready, integrate it so that it runs after a user uploads their resume. The scraped job postings can be stored in the JobPost model.
 
 Display Scraped Job Postings: Create a view and template to display the scraped job postings to the user. Allow users to select which job they're interested in.

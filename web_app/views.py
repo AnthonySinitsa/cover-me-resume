@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
+from .models import Resume
 
 class HomePageView(LoginRequiredMixin, TemplateView):
   template_name = 'home.html'
@@ -30,3 +31,9 @@ def upload_resume(request):
   else:
     form = ResumeUploadForm()
   return render(request, 'upload_resume.html', {'form': form})
+
+@login_required
+def profile(request):
+  user_resumes = Resume.objects.filter(user=request.user)
+  context = {'resumes': user_resumes}
+  return render(request, 'profile.html', context)
