@@ -37,3 +37,16 @@ def profile(request):
   user_resumes = Resume.objects.filter(user=request.user)
   context = {'resumes': user_resumes}
   return render(request, 'profile.html', context)
+
+def job_search(request):
+  if request.method == "POST":
+    job_title = request.POST.get('job_title')
+    job_location = request.POST.get('job_location')
+
+    # Run the scraper
+    from scrapers.indeed_scraper import run
+    run.scrape_jobs(job_title, job_location)
+
+    # Redirect to results page after scraping
+    return redirect('job_results')
+  return render(request, 'job_search.html')

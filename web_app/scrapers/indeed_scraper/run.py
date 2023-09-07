@@ -9,7 +9,7 @@
 import json
 from pathlib import Path
 from .indeed import BASE_CONFIG
-import cover_me_app.indeed_scraper.indeed as indeed
+import web_app.scrapers.indeed_scraper.indeed as indeed
 import asyncio
 
 # Change this to your absolute path
