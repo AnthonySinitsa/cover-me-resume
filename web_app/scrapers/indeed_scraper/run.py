@@ -3,12 +3,12 @@
 # https://github.com/scrapfly/scrapfly-scrapers/tree/main/indeed-scraper
 # To run this script set the env variable $SCRAPFLY_KEY with your scrapfly API key:
 # $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
-# poetry run python Docker/modules/indeed_scraper/run.py
+# poetry run python web_app/scrapers/indeed_scraper/run.py
 
 # import asyncio-NEEDED FOR TESTING
 import json
 from pathlib import Path
-from indeed_scraper.indeed import BASE_CONFIG
+from scrapers.indeed_scraper.indeed import BASE_CONFIG
 import indeed_scraper.indeed as indeed
 import asyncio
 
