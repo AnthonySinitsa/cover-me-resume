@@ -1,6 +1,5 @@
 import json
 import openai
-import PyPDF2
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
@@ -9,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Resume
 from django.http import JsonResponse
 from django.conf import settings
+from .utils.pdf_utils import extract_text_from_pdf
+
 
 class HomePageView(LoginRequiredMixin, TemplateView):
   template_name = 'home.html'
@@ -74,14 +75,6 @@ def job_results(request):
   # Step 3: Passing the Data to the Template
   return render(request, 'job_results.html', {'jobs': jobs_list})
 
-def extract_text_from_pdf(file_path):
-  with open(file_path, 'rb') as file:
-    reader = PyPDF2.PdfFileReader(file)
-    text = ""
-    for page_num in range(reader.numPages):
-      text += reader.getPage(page_num).extractText()
-  return text
-
 def get_user_resume_as_text(user):
-    resume = user.resume_set.latest('uploaded_at')  # 'uploaded_at' is a DateTimeField in your Resume model
-    return extract_text_from_pdf(resume.resume_file.path)
+  resume = user.resume_set.latest('uploaded_at')  # 'uploaded_at' is a DateTimeField in your Resume model
+  return extract_text_from_pdf(resume.resume_file.path)
