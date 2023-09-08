@@ -1,5 +1,7 @@
+{% load custom_filters %}
+
 <ul>
-    {% for job in jobs %}
+    {% for index, job in jobs|enumerate %}
         <li>
             <strong>Company:</strong> {{ job.companyName }}<br>
             <strong>Description:</strong> {{ job.description|safe }}<br>
