@@ -85,7 +85,6 @@ def job_results(request):
 def get_user_resume_as_text(resume_file_path):
   return extract_text_from_pdf(resume_file_path)
 
-
 @login_required
 def generate_cover_letter(request, job_index):
   # Load the jobs from jobs.json
@@ -108,7 +107,7 @@ def generate_cover_letter(request, job_index):
     return render(request, 'error_page.html', {'error_message': error_message})
 
   # Use ChatGPT to generate the cover letter
-  openai_api_key = "OPENAI_API_KEY"  # Ideally, fetch this from your .env or settings
+  openai_api_key = settings.OPENAI_API_KEY
   headers = {
       "Authorization": f"Bearer {openai_api_key}",
       "Content-Type": "application/json",
@@ -119,6 +118,14 @@ def generate_cover_letter(request, job_index):
       "max_tokens": 500  # Just an example, adjust as needed.
   }
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
+
+  # Check the response status
+  if response.status_code != 200:
+      # Log the error content and display an error message to the user
+      print(f"OpenAI API Error: {response.status_code} - {response.text}")
+      error_message = "Failed to generate the cover letter due to an API error. Please try again."
+      return render(request, 'error_page.html', {'error_message': error_message})
+
   response_data = response.json()
 
   # Error checks
