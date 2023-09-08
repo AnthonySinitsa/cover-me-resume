@@ -1,5 +1,6 @@
 import json
 import openai
+import requests
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
@@ -78,3 +79,39 @@ def job_results(request):
 def get_user_resume_as_text(user):
   resume = user.resume_set.latest('uploaded_at')  # 'uploaded_at' is a DateTimeField in your Resume model
   return extract_text_from_pdf(resume.resume_file.path)
+
+@login_required
+def generate_cover_letter(request, job_index):
+  # Load the jobs from jobs.json
+  with open('path_to_jobs.json', 'r') as file:
+    jobs = json.load(file)
+  
+  # Get the selected job using the job_index
+  selected_job = jobs[job_index]
+  job_description = selected_job["description"]
+
+  # Fetch the user's resume and extract its text.
+  try:
+    resume = Resume.objects.filter(user=request.user).order_by('-upload_date').first()
+    resume_text = get_user_resume_as_text(resume.resume_file.path)
+  except ValueError as e:
+    # Handle the error, e.g., by returning an error message to the user.
+    error_message = str(e)
+    return render(request, 'error_page.html', {'error_message': error_message})
+
+  # Use ChatGPT to generate the cover letter
+  openai_api_key = "OPENAI_API_KEY"  # Ideally, fetch this from your .env or settings
+  headers = {
+    "Authorization": f"Bearer {openai_api_key}",
+    "Content-Type": "application/json",
+  }
+  prompt_text = f"Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
+  data = {
+    "prompt": prompt_text,
+    "max_tokens": 500  # Just an example, adjust as needed.
+  }
+  response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
+  cover_letter = response.json().get('choices')[0].get('text').strip()
+
+  # Render the cover letter on a new page or however you wish to display it.
+  return render(request, 'cover_letter_page.html', {'cover_letter': cover_letter})
