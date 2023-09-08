@@ -17,9 +17,9 @@ output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
 
 # UNCOMMENT THESE FOR TESTING THIS FILE
-job_specification = input('Enter job role: ')
-job_specification = job_specification.replace(" ", "+")
-location = input('Enter a location: ')
+# job_specification = input('Enter job role: ')
+# job_specification = job_specification.replace(" ", "+")
+# location = input('Enter a location: ')
 
 async def run(job_specification, location):
   # enable scrapfly cache for basic use
@@ -33,12 +33,12 @@ async def run(job_specification, location):
   job_keys = [job['jobkey'] for job in result_search]
       
   # Save the extracted job keys to a list
-  job_keys_path = output.joinpath("job_keys.txt")
-  job_keys_path.write_text('\n'.join(job_keys))
+  # job_keys_path = output.joinpath("job_keys.txt")
+  # job_keys_path.write_text('\n'.join(job_keys))
   
   result_jobs = await indeed.scrape_jobs(job_keys)
   output.joinpath("jobs.json").write_text(json.dumps(result_jobs, indent=2, ensure_ascii=False))
 
 # UNCOMMENT THESE FOR TESTING THIS FILE
-if __name__ == "__main__":
-  asyncio.run(run(job_specification, location))
+# if __name__ == "__main__":
+#   asyncio.run(run(job_specification, location))

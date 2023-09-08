@@ -1,0 +1,12 @@
+{% load custom_filters %}
+
+<ul>
+    {% for index, job in jobs|enumerate %}
+        <li>
+            <strong>Company:</strong> {{ job.companyName }}<br>
+            <strong>Description:</strong> {{ job.description|safe }}<br>
+            <a href="{{ job.companyOverviewLink }}" target="_blank">Company Overview</a>
+            <a href="{% url 'generate_cover_letter' index %}">Generate Cover Letter</a>
+        </li>
+    {% endfor %}
+</ul>

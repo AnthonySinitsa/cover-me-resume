@@ -10,13 +10,13 @@ run: python manage.py runserver
 
 DONE: User Registration, However I would like to add email verification later in the future...
 
-Resume Uploader: for the most part finished, just need add resume to database
+DONE: Resume Uploader: for the most part finished, just need add resume to database
 
 DONE: Add a profile page that will display all the resumes user has entered
 
-Job Scraper Integration: If your scraper is ready, integrate it so that it runs after a user uploads their resume. The scraped job postings can be stored in the JobPost model.
+DONE: Job Scraper Integration: If your scraper is ready, integrate it so that it runs after a user uploads their resume. The scraped job postings can be stored in the JobPost model.
 
-Display Scraped Job Postings: Create a view and template to display the scraped job postings to the user. Allow users to select which job they're interested in.
+DONE: Display Scraped Job Postings: Create a view and template to display the scraped job postings to the user. Allow users to select which job they're interested in.
 
 Cover Letter Generation with ChatGPT: Once a user selects a job, use the job description and the user's resume to generate a cover letter using ChatGPT. This might involve integrating with OpenAI's API or using a local ChatGPT model, depending on your setup.
 
