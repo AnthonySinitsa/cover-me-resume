@@ -76,14 +76,13 @@ def job_results(request):
   # Step 3: Passing the Data to the Template
   return render(request, 'job_results.html', {'jobs': jobs_list})
 
-def get_user_resume_as_text(user):
-  resume = user.resume_set.latest('uploaded_at')  # 'uploaded_at' is a DateTimeField in your Resume model
-  return extract_text_from_pdf(resume.resume_file.path)
+def get_user_resume_as_text(resume_file_path):
+  return extract_text_from_pdf(resume_file_path)
 
 @login_required
 def generate_cover_letter(request, job_index):
   # Load the jobs from jobs.json
-  with open('path_to_jobs.json', 'r') as file:
+  with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
     jobs = json.load(file)
   
   # Get the selected job using the job_index
@@ -92,7 +91,9 @@ def generate_cover_letter(request, job_index):
 
   # Fetch the user's resume and extract its text.
   try:
-    resume = Resume.objects.filter(user=request.user).order_by('-upload_date').first()
+    resume = Resume.objects.filter(user=request.user).order_by('-uploaded_at').first()
+    if not resume:
+      raise ValueError("No resume found for this user.")
     resume_text = get_user_resume_as_text(resume.resume_file.path)
   except ValueError as e:
     # Handle the error, e.g., by returning an error message to the user.

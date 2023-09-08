@@ -1,18 +1,26 @@
 import PyPDF2
 
-def extract_text_from_pdf(file_path):
-  try:
-      with open(file_path, 'rb') as file:
-        reader = PyPDF2.PdfFileReader(file)
-        text = ""
-        for page_num in range(reader.numPages):
-          text += reader.getPage(page_num).extractText()
-        
-        # Check if the extracted text is too short, which might indicate an image-only PDF.
-        if len(text) < 50:  # You can adjust this threshold as needed.
-          raise ValueError("The uploaded PDF seems to be image-based or contains very little text.")
-        
-        return text
-
-  except PyPDF2.utils.PdfReadError:
-    raise ValueError("The uploaded file appears to be a corrupted or invalid PDF.")
+def extract_text_from_pdf(pdf_path):
+    """
+    Extracts text from a given PDF file path.
+    
+    Args:
+    - pdf_path (str): Path to the PDF file.
+    
+    Returns:
+    - str: Extracted text from the PDF.
+    """
+    text = ""
+    try:
+        with open(pdf_path, 'rb') as file:
+            reader = PyPDF2.PdfFileReader(file)
+            for page_num in range(reader.numPages):
+                page = reader.getPage(page_num)
+                text += page.extractText()
+    except Exception as e:  # Catching generic exception for PyPDF2 errors
+        raise ValueError(f"An error occurred while reading the PDF: {str(e)}")
+    
+    if not text:
+        raise ValueError("The PDF doesn't seem to contain any text.")
+    
+    return text
