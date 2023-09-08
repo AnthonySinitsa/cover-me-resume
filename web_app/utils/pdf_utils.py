@@ -1,26 +1,27 @@
-import PyPDF2
+from PyPDF2 import PdfReader
 
 def extract_text_from_pdf(pdf_path):
-    """
-    Extracts text from a given PDF file path.
-    
-    Args:
-    - pdf_path (str): Path to the PDF file.
-    
-    Returns:
-    - str: Extracted text from the PDF.
-    """
-    text = ""
-    try:
-        with open(pdf_path, 'rb') as file:
-            reader = PyPDF2.PdfFileReader(file)
-            for page_num in range(reader.numPages):
-                page = reader.getPage(page_num)
-                text += page.extractText()
-    except Exception as e:  # Catching generic exception for PyPDF2 errors
-        raise ValueError(f"An error occurred while reading the PDF: {str(e)}")
-    
-    if not text:
-        raise ValueError("The PDF doesn't seem to contain any text.")
-    
-    return text
+  """
+  Extract text from a PDF file.
+
+  Parameters:
+  - pdf_path (str): The path to the PDF file.
+
+  Returns:
+  - str: The extracted text from the PDF.
+  """
+  try:
+    with open(pdf_path, 'rb') as file:
+      reader = PdfReader(file)
+      text = ""
+      for page in reader.pages:
+        text += page.extract_text()
+
+      # Check if the extracted text is meaningful
+      if not text or len(text.strip()) < 50:
+        raise ValueError("The extracted text from the PDF is either empty or too short.")
+
+      return text
+
+  except Exception as e:
+    raise ValueError(f"An error occurred while reading the PDF: {str(e)}")

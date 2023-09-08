@@ -15,6 +15,7 @@ from .utils.pdf_utils import extract_text_from_pdf
 class HomePageView(LoginRequiredMixin, TemplateView):
   template_name = 'home.html'
 
+
 def register(request):
   if request.method == 'POST':
     form = UserRegisterForm(request.POST)
@@ -25,6 +26,7 @@ def register(request):
   else:
     form = UserRegisterForm()
   return render(request, 'registration/register.html', {'form': form})
+  
   
 @login_required
 def upload_resume(request):
@@ -39,11 +41,13 @@ def upload_resume(request):
     form = ResumeUploadForm()
   return render(request, 'upload_resume.html', {'form': form})
 
+
 @login_required
 def profile(request):
   user_resumes = Resume.objects.filter(user=request.user)
   context = {'resumes': user_resumes}
   return render(request, 'profile.html', context)
+
 
 def job_search(request):
   if request.method == "POST":
@@ -57,6 +61,7 @@ def job_search(request):
     # Redirect to results page after scraping
     return redirect('job_results')
   return render(request, 'job_search.html')
+
 
 def job_results(request):
   # Step 1: Reading the JSON File
@@ -76,8 +81,10 @@ def job_results(request):
   # Step 3: Passing the Data to the Template
   return render(request, 'job_results.html', {'jobs': jobs_list})
 
+
 def get_user_resume_as_text(resume_file_path):
   return extract_text_from_pdf(resume_file_path)
+
 
 @login_required
 def generate_cover_letter(request, job_index):
@@ -103,16 +110,23 @@ def generate_cover_letter(request, job_index):
   # Use ChatGPT to generate the cover letter
   openai_api_key = "OPENAI_API_KEY"  # Ideally, fetch this from your .env or settings
   headers = {
-    "Authorization": f"Bearer {openai_api_key}",
-    "Content-Type": "application/json",
+      "Authorization": f"Bearer {openai_api_key}",
+      "Content-Type": "application/json",
   }
   prompt_text = f"Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
   data = {
-    "prompt": prompt_text,
-    "max_tokens": 500  # Just an example, adjust as needed.
+      "prompt": prompt_text,
+      "max_tokens": 500  # Just an example, adjust as needed.
   }
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
-  cover_letter = response.json().get('choices')[0].get('text').strip()
+  response_data = response.json()
+
+  # Error checks
+  if 'choices' not in response_data or not response_data['choices'] or 'text' not in response_data['choices'][0]:
+      error_message = "Failed to generate the cover letter. Please try again."
+      return render(request, 'error_page.html', {'error_message': error_message})
+
+  cover_letter = response_data['choices'][0]['text'].strip()
 
   # Render the cover letter on a new page or however you wish to display it.
   return render(request, 'cover_letter_page.html', {'cover_letter': cover_letter})
