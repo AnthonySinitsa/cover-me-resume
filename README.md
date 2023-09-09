@@ -24,7 +24,7 @@ Add a page for user to enter job and location to start the scraper
 
 Add email confirmation
 
-Add to profile page to show all the cover letters generated
+DONE: Add to profile page to show all the cover letters generated
 
 Styling and User Experience: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, React, or Vue.js if you're familiar with them.
 
