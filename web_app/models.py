@@ -23,4 +23,5 @@ class CoverLetter(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     content = models.TextField()
+    pdf_file = models.FileField(upload_to='cover_letters/', null=True, blank=True)
     generated_at = models.DateTimeField(default=timezone.now)

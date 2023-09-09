@@ -8,12 +8,14 @@ from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
-from .models import Resume
+from .models import Resume, CoverLetter
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .utils.pdf_utils import extract_text_from_pdf
 from .utils.text_utils import strip_html_tags
 from wsgiref.util import FileWrapper
+from django.core.files.base import ContentFile
+from datetime import datetime
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -289,6 +291,13 @@ def download_cover_letter(request):
 
     # Convert the HTML to PDF
     pdf = pdfkit.from_string(cover_letter_html, False)
+
+    # Save the generated PDF to the database
+    cover_letter_record = CoverLetter(
+        user=request.user, 
+        file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+    )
+    cover_letter_record.save()
 
     # Serve the PDF as a response
     response = HttpResponse(pdf, content_type='application/pdf')
