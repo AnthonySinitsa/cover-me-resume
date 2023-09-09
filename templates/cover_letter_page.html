@@ -2,7 +2,14 @@
 
 {% block content %}
     <h2>Your Generated Cover Letter</h2>
-    <div>
-        {{ cover_letter }}
-    </div>
+
+    <form action="{% url 'download_cover_letter' %}" method="post">
+        {% csrf_token %}
+        
+        <textarea name="cover_letter_text" id="coverLetterTextArea" rows="20" cols="100">
+            {{ cover_letter }}
+        </textarea>
+        <br>
+        <input type="submit" value="Download as PDF">
+    </form>
 {% endblock %}
