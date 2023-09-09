@@ -10,4 +10,16 @@
         </li>
     {% endfor %}
 </ul>
+
+<h2>Your Generated Cover Letters:</h2>
+<ul>
+    {% for letter in cover_letters %}
+        <li>
+            Cover Letter - {{ letter.created_at }} 
+            <a href="{% url 'download_cover_letter' letter.id %}">Download</a> | 
+            <a href="{% url 'delete_cover_letter' letter.id %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+
 {% endblock %}

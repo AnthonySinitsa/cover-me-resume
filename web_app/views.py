@@ -5,7 +5,7 @@ import requests
 import pdfkit
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
 from .models import Resume, CoverLetter
@@ -116,9 +116,9 @@ def profile(request):
     Usage:
         This view is typically accessed by authenticated users to view their profile page,
         which includes a list of their resumes."""
-  user_resumes = Resume.objects.filter(user=request.user)
-  context = {'resumes': user_resumes}
-  return render(request, 'profile.html', context)
+  resumes = Resume.objects.filter(user=request.user).order_by('-uploaded_at')
+  cover_letters = CoverLetter.objects.filter(user=request.user).order_by('-generated_at')
+  return render(request, 'profile.html', {'resumes': resumes, 'cover_letters': cover_letters})
 
 
 def job_search(request):
@@ -281,9 +281,18 @@ def generate_cover_letter(request, job_index):
 
 
 @login_required
-def download_cover_letter(request):
-    # This example assumes that you are posting the cover letter text from a form.
-    # You can adjust this as necessary.
+def download_cover_letter(request, cover_letter_id=None):
+    # If cover_letter_id is provided, it means we are serving an already-saved PDF
+    if cover_letter_id:
+        cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
+        pdf = cover_letter.pdf_file.read()
+
+        # Serve the PDF as a response
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
+        return response
+
+    # If cover_letter_id is not provided, we generate the PDF on-the-fly
     cover_letter_text = request.POST.get('cover_letter_text')
 
     # Convert newline characters to <br> for proper HTML rendering
@@ -294,12 +303,20 @@ def download_cover_letter(request):
 
     # Save the generated PDF to the database
     cover_letter_record = CoverLetter(
-        user=request.user, 
-        file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+      user=request.user, 
+      pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
     )
+
     cover_letter_record.save()
 
-    # Serve the PDF as a response
+    # Serve the generated PDF as a response
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
     return response
+
+
+@login_required
+def delete_cover_letter(request, letter_id):
+    cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+    cover_letter.delete()
+    return redirect('profile')
