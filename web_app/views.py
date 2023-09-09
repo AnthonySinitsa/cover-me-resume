@@ -1,15 +1,19 @@
+import os
 import json
 import openai
 import requests
+import pdfkit
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
 from .models import Resume
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .utils.pdf_utils import extract_text_from_pdf
+from .utils.text_utils import strip_html_tags
+from wsgiref.util import FileWrapper
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -268,6 +272,25 @@ def generate_cover_letter(request, job_index):
       return render(request, 'error_page.html', {'error_message': error_message})
 
   cover_letter = response_data['choices'][0]['text'].strip()
+  cleaned_cover_letter = strip_html_tags(cover_letter) # THIS ISN'T BEING USED, BUT MAYBE NEED FOR LATER
 
   # Render the cover letter on a new page or however you wish to display it.
   return render(request, 'cover_letter_page.html', {'cover_letter': cover_letter})
+
+
+@login_required
+def download_cover_letter(request):
+    # This example assumes that you are posting the cover letter text from a form.
+    # You can adjust this as necessary.
+    cover_letter_text = request.POST.get('cover_letter_text')
+
+    # Convert newline characters to <br> for proper HTML rendering
+    cover_letter_html = cover_letter_text.replace('\n', '<br>')
+
+    # Convert the HTML to PDF
+    pdf = pdfkit.from_string(cover_letter_html, False)
+
+    # Serve the PDF as a response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+    return response

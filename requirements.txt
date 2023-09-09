@@ -74,6 +74,7 @@ openai==0.28.0
 packaging==23.1
 parsel==1.8.1
 pathspec==0.11.2
+pdfkit==1.0.0
 pdoc3==0.10.0
 pexpect==4.8.0
 pkginfo==1.9.6
@@ -136,6 +137,7 @@ virtualenv==20.24.4
 w3lib==2.1.2
 webencodings==0.5.1
 whitenoise==6.4.0
+wkhtmltopdf==0.2
 yarl==1.9.2
 zipp==3.16.2
 zope.interface==6.0
