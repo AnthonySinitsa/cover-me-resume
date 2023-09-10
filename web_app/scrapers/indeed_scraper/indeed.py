@@ -25,6 +25,10 @@ BASE_CONFIG = {
 
 def parse_search_page(result):
   """Find hidden web data of search results in Indeed.com search page HTML"""
+
+  # UNCOMMENT THIS FOR TESTING
+  # print(result.content)
+
   data = re.findall(r'window.mosaic.providerData\["mosaic-provider-jobcards"\]=(\{.+?\});', result.content)
   data = json.loads(data[0])
   return {
