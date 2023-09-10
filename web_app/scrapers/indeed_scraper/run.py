@@ -6,8 +6,11 @@
 # poetry run python web_app/scrapers/indeed_scraper/run.py
 
 # import asyncio-NEEDED FOR TESTING
-import json
+import sys
 from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+import json
 from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
 import web_app.scrapers.indeed_scraper.indeed as indeed
 import asyncio

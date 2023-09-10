@@ -39,3 +39,7 @@ NOTES:
 poetry shell
 
 ^ this runs poetry environment, make sure to turn off venv
+
+exit
+
+^ to deactivate
