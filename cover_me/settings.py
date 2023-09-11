@@ -139,3 +139,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+SCRAPFLY_KEY = os.environ.get('SCRAPFLY_KEY')
