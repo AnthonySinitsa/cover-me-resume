@@ -3,6 +3,7 @@
 # https://github.com/scrapfly/scrapfly-scrapers/tree/main/indeed-scraper
 # To run this script set the env variable $SCRAPFLY_KEY with your scrapfly API key:
 # $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
+# export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH
 # poetry run python web_app/scrapers/indeed_scraper/run.py
 
 # import asyncio-NEEDED FOR TESTING
