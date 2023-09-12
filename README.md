@@ -22,9 +22,9 @@ DONE: Cover Letter Generation with ChatGPT: Once a user selects a job, use the j
 
 DONE: Add to profile page to show all the cover letters generated
 
-Add a page for user to enter job and location to start the scraper
+WIP: Add a page for user to enter job and location to start the scraper
 
-Add email confirmation
+Add option to delete account
 
 before deployment, make sure add media files that the user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3
 
@@ -34,12 +34,20 @@ Tests: Write tests to ensure the functionality of your site. Django's built-in t
 
 Deployment: Once you're satisfied with your site in the development environment, plan for deployment to a live server.
 
-NOTES:
+```,
+This project MUST use poetry, 
 
-poetry shell
+COMMANDS:
 
-^ this runs poetry environment, make sure to turn off venv
+$ poetry shell
+  ^ starts environment (make sure to turn off .venv if installed)
 
-exit
+$ exit
+  ^ deactivate
 
-^ to deactivate
+$ redis-server
+  ^ starts redis server at localhost:6379
+
+$ celery -A cover_me worker --loglevel=info
+  ^ starts the celery worker
+```
