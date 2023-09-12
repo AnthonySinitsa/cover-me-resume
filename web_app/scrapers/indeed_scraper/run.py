@@ -3,11 +3,15 @@
 # https://github.com/scrapfly/scrapfly-scrapers/tree/main/indeed-scraper
 # To run this script set the env variable $SCRAPFLY_KEY with your scrapfly API key:
 # $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
+# export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH
 # poetry run python web_app/scrapers/indeed_scraper/run.py
 
 # import asyncio-NEEDED FOR TESTING
-import json
+import sys
 from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+import json
 from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
 import web_app.scrapers.indeed_scraper.indeed as indeed
 import asyncio

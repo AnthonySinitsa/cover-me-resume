@@ -3,6 +3,7 @@ import json
 import openai
 import requests
 import pdfkit
+import asyncio
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
@@ -142,8 +143,8 @@ def job_search(request):
     job_location = request.POST.get('job_location')
 
     # Run the scraper
-    from scrapers.indeed_scraper import run
-    run.scrape_jobs(job_title, job_location)
+    from web_app.scrapers.indeed_scraper.run import run
+    asyncio.run(run(job_title, job_location))
 
     # Redirect to results page after scraping
     return redirect('job_results')

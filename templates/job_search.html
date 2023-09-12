@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Start Job Scraper</h2>
+
+<form method="post" action="{% url 'job_search' %}">
+    {% csrf_token %}
+    <div>
+        <label for="job_title">Job Title:</label>
+        <input type="text" name="job_title" required>
+    </div>
+    
+    <div>
+        <label for="location">Location:</label>
+        <input type="text" name="location" required>
+    </div>
+    
+    <div>
+        <button type="submit">Start Scraping</button>
+    </div>
+</form>
+{% endblock %}

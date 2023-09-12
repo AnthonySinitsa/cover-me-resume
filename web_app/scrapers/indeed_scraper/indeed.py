@@ -23,8 +23,17 @@ BASE_CONFIG = {
   "country": "US",
 }
 
+debug_folder = Path(__file__).parent.parent / "debug"
+
 def parse_search_page(result):
   """Find hidden web data of search results in Indeed.com search page HTML"""
+
+  # UNCOMMENT THIS FOR TESTING
+  # print(result.content)
+
+  with open(debug_folder / "response_from_django_search.html", "w", encoding="utf-8") as f:
+    f.write(result.content)
+
   data = re.findall(r'window.mosaic.providerData\["mosaic-provider-jobcards"\]=(\{.+?\});', result.content)
   data = json.loads(data[0])
   return {
@@ -70,6 +79,10 @@ async def scrape_search(url: str, max_results: int = 1000) -> List[Dict]:
 
 def parse_job_page(result: ScrapeApiResponse):
   """parse job data from job listing page"""
+  
+  with open(debug_folder / "response_from_django_job.html", "w", encoding="utf-8") as f:
+    f.write(result.content)
+  
   data = re.findall(r"_initialData=(\{.+?\});", result.content)
   data = json.loads(data[0])
   data = data["jobInfoWrapperModel"]["jobInfoModel"]
