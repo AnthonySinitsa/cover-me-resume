@@ -47,7 +47,8 @@ $ exit
 
 $ redis-server
   ^ starts redis server at localhost:6379
-
+    ^ run the server on a console and then open up another console to 
+  run ↓ this command in a new console
 $ celery -A cover_me worker --loglevel=info
   ^ starts the celery worker
 ```
