@@ -6,15 +6,20 @@
 # export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH
 # poetry run python web_app/scrapers/indeed_scraper/run.py
 
-# import asyncio-NEEDED FOR TESTING
+# After making these changes, you'll be able to run the script from the command line with the necessary arguments, like:
+# poetry run python web_app/scrapers/indeed_scraper/run.py --job_description "Software Engineer" --location "New York"
+
+
 import sys
 from pathlib import Path
+import json
+import argparse
+import asyncio
+
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-import json
 from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
 import web_app.scrapers.indeed_scraper.indeed as indeed
-import asyncio
 
 # Change this to your absolute path
 output = Path(__file__).parent / "results"
@@ -42,6 +47,20 @@ async def run(job_specification, location):
   
   result_jobs = await indeed.scrape_jobs(job_keys)
   output.joinpath("jobs.json").write_text(json.dumps(result_jobs, indent=2, ensure_ascii=False))
+
+
+def parse_arguments():  # <-- Add this function to parse command-line arguments
+  parser = argparse.ArgumentParser(description="Indeed.com Job Scraper")
+  parser.add_argument("--job_description", required=True, help="Job description to search for")
+  parser.add_argument("--location", required=True, help="Location to search")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  args = parse_arguments()
+  job_description = args.job_description
+  location = args.location
+  asyncio.run(run(job_description, location))
 
 # UNCOMMENT THESE FOR TESTING THIS FILE
 # if __name__ == "__main__":

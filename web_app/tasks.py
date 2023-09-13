@@ -19,7 +19,6 @@ def run_scraper(job_title, job_location):
   stdout, stderr = process.communicate()
 
   if process.returncode != 0:
-    # If there's an error, you can raise an exception or handle it appropriately
     raise Exception(f"Scraper failed with error: {stderr.decode('utf-8')}")
 
   return stdout.decode('utf-8')
