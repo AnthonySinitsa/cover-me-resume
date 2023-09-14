@@ -18,6 +18,7 @@ from wsgiref.util import FileWrapper
 from django.core.files.base import ContentFile
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
+from .tasks import run_scraper
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -91,6 +92,7 @@ def job_results(request):
 def get_user_resume_as_text(resume_file_path):
   return extract_text_from_pdf(resume_file_path)
 
+
 @login_required
 def generate_cover_letter(request, job_index):
   # Load the jobs from jobs.json
@@ -115,29 +117,29 @@ def generate_cover_letter(request, job_index):
   # Use ChatGPT to generate the cover letter
   openai_api_key = settings.OPENAI_API_KEY
   headers = {
-      "Authorization": f"Bearer {openai_api_key}",
-      "Content-Type": "application/json",
+    "Authorization": f"Bearer {openai_api_key}",
+    "Content-Type": "application/json",
   }
   prompt_text = f"Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
   data = {
-      "prompt": prompt_text,
-      "max_tokens": 500  # Just an example, adjust as needed.
+    "prompt": prompt_text,
+    "max_tokens": 500  # Just an example, adjust as needed.
   }
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
 
   # Check the response status
   if response.status_code != 200:
-      # Log the error content and display an error message to the user
-      print(f"OpenAI API Error: {response.status_code} - {response.text}")
-      error_message = "Failed to generate the cover letter due to an API error. Please try again."
-      return render(request, 'error_page.html', {'error_message': error_message})
+    # Log the error content and display an error message to the user
+    print(f"OpenAI API Error: {response.status_code} - {response.text}")
+    error_message = "Failed to generate the cover letter due to an API error. Please try again."
+    return render(request, 'error_page.html', {'error_message': error_message})
 
   response_data = response.json()
 
   # Error checks
   if 'choices' not in response_data or not response_data['choices'] or 'text' not in response_data['choices'][0]:
-      error_message = "Failed to generate the cover letter. Please try again."
-      return render(request, 'error_page.html', {'error_message': error_message})
+    error_message = "Failed to generate the cover letter. Please try again."
+    return render(request, 'error_page.html', {'error_message': error_message})
 
   cover_letter = response_data['choices'][0]['text'].strip()
   cleaned_cover_letter = strip_html_tags(cover_letter) # THIS ISN'T BEING USED, BUT MAYBE NEED FOR LATER
@@ -148,41 +150,41 @@ def generate_cover_letter(request, job_index):
 
 @login_required
 def download_cover_letter(request, cover_letter_id=None):
-    # If cover_letter_id is provided, it means we are serving an already-saved PDF
-    if cover_letter_id:
-        cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
-        pdf = cover_letter.pdf_file.read()
+  # If cover_letter_id is provided, it means we are serving an already-saved PDF
+  if cover_letter_id:
+    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
+    pdf = cover_letter.pdf_file.read()
 
-        # Serve the PDF as a response
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
-        return response
-
-    # If cover_letter_id is not provided, we generate the PDF on-the-fly
-    cover_letter_text = request.POST.get('cover_letter_text')
-
-    # Convert newline characters to <br> for proper HTML rendering
-    cover_letter_html = cover_letter_text.replace('\n', '<br>')
-
-    # Convert the HTML to PDF
-    pdf = pdfkit.from_string(cover_letter_html, False)
-
-    # Save the generated PDF to the database
-    cover_letter_record = CoverLetter(
-      user=request.user, 
-      pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
-    )
-
-    cover_letter_record.save()
-
-    # Serve the generated PDF as a response
+    # Serve the PDF as a response
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
     return response
+
+  # If cover_letter_id is not provided, we generate the PDF on-the-fly
+  cover_letter_text = request.POST.get('cover_letter_text')
+
+  # Convert newline characters to <br> for proper HTML rendering
+  cover_letter_html = cover_letter_text.replace('\n', '<br>')
+
+  # Convert the HTML to PDF
+  pdf = pdfkit.from_string(cover_letter_html, False)
+
+  # Save the generated PDF to the database
+  cover_letter_record = CoverLetter(
+    user=request.user, 
+    pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+  )
+
+  cover_letter_record.save()
+
+  # Serve the generated PDF as a response
+  response = HttpResponse(pdf, content_type='application/pdf')
+  response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+  return response
 
 
 @login_required
 def delete_cover_letter(request, letter_id):
-    cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
-    cover_letter.delete()
-    return redirect('profile')
+  cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+  cover_letter.delete()
+  return redirect('profile')
