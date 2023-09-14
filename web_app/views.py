@@ -7,6 +7,7 @@ import asyncio
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
 from .models import Resume, CoverLetter
@@ -68,27 +69,38 @@ def job_search(request):
     task = run_scraper.delay(job_title, job_location)
 
     # Redirect to results page after initiating scraping
-    return redirect('job_results')
+    results_url = reverse('job_results', args=[task.id])
+    return redirect(results_url)
   return render(request, 'job_search.html')
 
 
-def job_results(request):
-  # Step 1: Reading the JSON File
-  with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
-    job_data = json.load(file)
+def job_results(request, task_id=None):
+  # Only get job data if the task has completed successfully
+  # But for now, we'll just load the data as before
+  if task_id:
+    # You can use the task_id to check the task status if needed
+    # For now, we'll pass it to the template for AJAX polling
+    
+    # Step 1: Reading the JSON File
+    with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
+      job_data = json.load(file)
 
-  # Step 2: Extracting the Relevant Data
-  jobs_list = []
-  for job in job_data:
-    job_info = {
-      "description": job["description"],
-      "companyName": job["companyName"],
-      "companyOverviewLink": job["companyOverviewLink"]
-    }
-    jobs_list.append(job_info)
+    # Step 2: Extracting the Relevant Data
+    jobs_list = []
+    for job in job_data:
+      job_info = {
+        "description": job["description"],
+        "companyName": job["companyName"],
+        "companyOverviewLink": job["companyOverviewLink"]
+      }
+      jobs_list.append(job_info)
+    
+    # Step 3: Passing the Data to the Template
+    return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
+  
+  # If there's no task_id for some reason, handle it (e.g., display an error or redirect)
+  return render(request, 'error_page.html', {'message': 'No task ID provided.'})
 
-  # Step 3: Passing the Data to the Template
-  return render(request, 'job_results.html', {'jobs': jobs_list})
 
 
 def get_user_resume_as_text(resume_file_path):
