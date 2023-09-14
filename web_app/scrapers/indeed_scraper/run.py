@@ -18,7 +18,6 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
 import web_app.scrapers.indeed_scraper.indeed as indeed
 
-# Change this to your absolute path
 output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +52,3 @@ if __name__ == "__main__":
   job_description = args.job_description
   location = args.location
   asyncio.run(run(job_description, location))
-
-# UNCOMMENT THESE FOR TESTING THIS FILE
-# if __name__ == "__main__":
-#   asyncio.run(run(job_specification, location))

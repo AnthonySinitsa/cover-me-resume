@@ -1,34 +1,14 @@
+import asyncio
 from celery import shared_task
-import subprocess
-from django.conf import settings
+from web_app.scrapers.indeed_scraper.run import run as scraper_run
 
 @shared_task
 def run_scraper(job_title, job_location):
-  # Set environment variables
-  commands = [
-    f"export SCRAPFLY_KEY='{settings.SCRAPFLY_KEY}'",
-    f"export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH",
-    f"poetry run python web_app/scrapers/indeed_scraper/run.py --job_description '{job_title}' --location '{job_location}'"
-  ]
-
-  # Join the commands with '&&' to run them consecutively
-  command = ' && '.join(commands)
-
-  # Use subprocess to execute the command
-  process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  stdout, stderr = process.communicate()
-
-  if process.returncode != 0:
-    raise Exception(f"Scraper failed with error: {stderr.decode('utf-8')}")
-
-  return stdout.decode('utf-8')
-
-
-# project_root = Path(__file__).resolve().parents[3]  # Adjust the number based on your directory structure
-
-#     # Define the commands to run the scraper
-#     commands = [
-#         f"export SCRAPFLY_KEY='{settings.SCRAPFLY_KEY}'",
-#         f"export PYTHONPATH={project_root}:$PYTHONPATH",
-#         "poetry run python web_app/scrapers/indeed_scraper/run.py"
-#     ]
+  try:
+    print("Starting scraper...")  # Add this print statement
+    asyncio.run(scraper_run(job_title, job_location))  # Wrap the function with asyncio.run
+    print("Scraper finished successfully.")  # Add this print statement
+    return "Scraper completed successfully."
+  except Exception as e:
+    print(f"Exception encountered: {str(e)}")  # Add this print statement
+    return f"Scraper failed with error: {str(e)}"

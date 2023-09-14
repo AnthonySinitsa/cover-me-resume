@@ -20,7 +20,6 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
 from .tasks import run_scraper
-from celery.result import AsyncResult
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -63,7 +62,11 @@ def profile(request):
 def job_search(request):
   if request.method == "POST":
     job_title = request.POST.get('job_title')
-    job_location = request.POST.get('job_location')
+    job_location = request.POST.get('location')
+
+    # Print the fetched values
+    # print(f"Job Title: {job_title}")
+    # print(f"Job Location: {job_location}")
 
     # Send the scraping task to Celery
     task = run_scraper.delay(job_title, job_location)
@@ -75,12 +78,7 @@ def job_search(request):
 
 
 def job_results(request, task_id=None):
-  # Only get job data if the task has completed successfully
-  # But for now, we'll just load the data as before
   if task_id:
-    # You can use the task_id to check the task status if needed
-    # For now, we'll pass it to the template for AJAX polling
-    
     # Step 1: Reading the JSON File
     with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
       job_data = json.load(file)
@@ -97,8 +95,6 @@ def job_results(request, task_id=None):
     
     # Step 3: Passing the Data to the Template
     return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
-  
-  # If there's no task_id for some reason, handle it (e.g., display an error or redirect)
   return render(request, 'error_page.html', {'message': 'No task ID provided.'})
 
 
