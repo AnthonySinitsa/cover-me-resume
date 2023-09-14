@@ -7,6 +7,7 @@ import asyncio
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
 from .models import Resume, CoverLetter
@@ -17,6 +18,8 @@ from .utils.text_utils import strip_html_tags
 from wsgiref.util import FileWrapper
 from django.core.files.base import ContentFile
 from datetime import datetime
+from web_app.scrapers.indeed_scraper.run import run
+from .tasks import run_scraper
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -24,25 +27,6 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
 
 def register(request):
-  """Handle user registration.
-
-    This view function handles user registration requests. It supports both GET and POST requests.
-    When a GET request is received, it displays a registration form.
-    When a POST request is received with valid form data, it creates a new user account and redirects to the login page.
-    
-    Parameters:
-    - request (HttpRequest): The HTTP request object containing user data and method.
-
-    Returns:
-    - HttpResponse: A response containing the registration form or a redirect to the login page.
-
-    Example usage:
-    To register a user, make a POST request with valid user registration data.
-    To display the registration form, make a GET request to this view.
-
-    Note:
-    This view expects a 'UserRegisterForm' instance to be available for user registration.
-    The 'registration/register.html' template is used to render the registration form."""
   if request.method == 'POST':
     form = UserRegisterForm(request.POST)
     if form.is_valid():
@@ -56,27 +40,6 @@ def register(request):
   
 @login_required
 def upload_resume(request):
-  """View for uploading a user's resume.
-
-This view requires authentication, and users must be logged in to access it.
-
-When accessed via POST request, it validates and saves the uploaded resume file
-associated with the logged-in user. If the form is valid, it associates the resume
-with the user and redirects to the 'home' page or another specified destination upon
-successful upload.
-
-Parameters:
-    request (HttpRequest): The HTTP request object containing user data.
-
-Returns:
-    HttpResponse: A rendered HTML page with an upload form if accessed via GET request,
-    or a redirection to the 'home' page (or another specified destination) upon
-    successful resume upload via POST request.
-
-Note:
-    The 'upload_resume.html' template should be used for rendering the upload form.
-    To customize the redirection destination, change the 'return redirect('home')'
-    line to the desired URL."""
   if request.method == 'POST':
     form = ResumeUploadForm(request.POST, request.FILES)
     if form.is_valid():
@@ -91,143 +54,57 @@ Note:
 
 @login_required
 def profile(request):
-  """View function for displaying a user's profile page, which includes a list of their resumes.
-
-    This view retrieves all the resumes associated with the authenticated user and renders
-    them on the 'profile.html' template.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        HttpResponse: A rendered HTML response displaying the user's profile and their resumes.
-
-    Raises:
-        None
-
-    Required Permissions:
-        - User must be authenticated (@login_required decorator).
-
-    Template:
-        - 'profile.html': This template is used to render the user's profile page.
-
-    Context:
-        - 'resumes' (QuerySet): A QuerySet containing the user's resumes.
-
-    Usage:
-        This view is typically accessed by authenticated users to view their profile page,
-        which includes a list of their resumes."""
   resumes = Resume.objects.filter(user=request.user).order_by('-uploaded_at')
   cover_letters = CoverLetter.objects.filter(user=request.user).order_by('-generated_at')
   return render(request, 'profile.html', {'resumes': resumes, 'cover_letters': cover_letters})
 
 
 def job_search(request):
-  """Handle job search form submission.
-
-    This view function is responsible for processing job search form submissions.
-    When a POST request is received, it extracts the job title and job location
-    from the form data, then initiates a job scraping process using an external
-    scraper module (indeed_scraper). After scraping, it redirects the user to
-    the job results page. When the request method is not POST, it renders the
-    initial job search form.
-
-    Args:
-        request (HttpRequest): The HTTP request object containing form data.
-
-    Returns:
-        HttpResponse: Redirects to 'job_results' page after scraping (POST request),
-        or renders 'job_search.html' with the initial search form (GET request)."""
   if request.method == "POST":
     job_title = request.POST.get('job_title')
-    job_location = request.POST.get('job_location')
+    job_location = request.POST.get('location')
 
-    # Run the scraper
-    from web_app.scrapers.indeed_scraper.run import run
-    asyncio.run(run(job_title, job_location))
+    # Print the fetched values
+    # print(f"Job Title: {job_title}")
+    # print(f"Job Location: {job_location}")
 
-    # Redirect to results page after scraping
-    return redirect('job_results')
+    # Send the scraping task to Celery
+    task = run_scraper.delay(job_title, job_location)
+
+    # Redirect to results page after initiating scraping
+    results_url = reverse('job_results', args=[task.id])
+    return redirect(results_url)
   return render(request, 'job_search.html')
 
 
-def job_results(request):
-  """Retrieves job data from a JSON file, extracts relevant information, and renders it in a template.
+def job_results(request, task_id=None):
+  if task_id:
+    # Step 1: Reading the JSON File
+    with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
+      job_data = json.load(file)
 
-    Parameters:
-    - request (HttpRequest): The HTTP request object.
-
-    Returns:
-    - HttpResponse: A rendered HTML page displaying job results.
+    # Step 2: Extracting the Relevant Data
+    jobs_list = []
+    for job in job_data:
+      job_info = {
+        "description": job["description"],
+        "companyName": job["companyName"],
+        "companyOverviewLink": job["companyOverviewLink"]
+      }
+      jobs_list.append(job_info)
     
-    This function performs the following steps:
-    1. Reads job data from the 'web_app/scrapers/indeed_scraper/results/jobs.json' file.
-    2. Extracts relevant job information, including job description, company name, and company overview link.
-    3. Passes the extracted data to the 'job_results.html' template for rendering.
+    # Step 3: Passing the Data to the Template
+    return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
+  return render(request, 'error_page.html', {'message': 'No task ID provided.'})
 
-    Example Usage:
-    To display job results, call this function with an appropriate HTTP request object."""
-  # Step 1: Reading the JSON File
-  with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
-    job_data = json.load(file)
-
-  # Step 2: Extracting the Relevant Data
-  jobs_list = []
-  for job in job_data:
-    job_info = {
-      "description": job["description"],
-      "companyName": job["companyName"],
-      "companyOverviewLink": job["companyOverviewLink"]
-    }
-    jobs_list.append(job_info)
-
-  # Step 3: Passing the Data to the Template
-  return render(request, 'job_results.html', {'jobs': jobs_list})
 
 
 def get_user_resume_as_text(resume_file_path):
-  """Extracts text content from a PDF resume file and returns it as plain text.
-
-    Parameters:
-    resume_file_path (str): The file path to the PDF resume to be processed.
-
-    Returns:
-    str: The extracted text content from the PDF resume.
-
-    Raises:
-    FileNotFoundError: If the specified resume_file_path does not exist.
-    ValueError: If the file at resume_file_path is not a valid PDF.
-
-    Example:
-    >>> text = get_user_resume_as_text("path/to/resume.pdf")
-    >>> print(text)
-    "John Doe\n123 Main Street\nCity, State ZIP\nPhone: (123) 456-7890\nEmail: johndoe@email.com\n..."
-
-    This function takes a PDF resume file and uses the 'extract_text_from_pdf' function to
-    extract its textual content. It is designed to handle exceptions for missing files
-    and invalid PDFs, raising appropriate errors. The extracted text is returned as a string."""
   return extract_text_from_pdf(resume_file_path)
+
 
 @login_required
 def generate_cover_letter(request, job_index):
-  """ Generate a cover letter for a job application.
-
-    This function takes the user's request and a job index as input. It retrieves the job description
-    from a JSON file, the user's resume, and then uses the OpenAI API to generate a cover letter
-    based on the provided job description and the user's resume.
-
-    Args:
-        request (HttpRequest): The HTTP request object from Django.
-        job_index (int): The index of the job for which to generate the cover letter.
-
-    Returns:
-        HttpResponse: A response containing the generated cover letter or an error message page.
-
-    Raises:
-        ValueError: If there is no resume found for the user.
-
-    Note:
-        The generated cover letter is displayed to the user on a separate page."""
   # Load the jobs from jobs.json
   with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
     jobs = json.load(file)
@@ -250,29 +127,29 @@ def generate_cover_letter(request, job_index):
   # Use ChatGPT to generate the cover letter
   openai_api_key = settings.OPENAI_API_KEY
   headers = {
-      "Authorization": f"Bearer {openai_api_key}",
-      "Content-Type": "application/json",
+    "Authorization": f"Bearer {openai_api_key}",
+    "Content-Type": "application/json",
   }
   prompt_text = f"Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
   data = {
-      "prompt": prompt_text,
-      "max_tokens": 500  # Just an example, adjust as needed.
+    "prompt": prompt_text,
+    "max_tokens": 500  # Just an example, adjust as needed.
   }
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
 
   # Check the response status
   if response.status_code != 200:
-      # Log the error content and display an error message to the user
-      print(f"OpenAI API Error: {response.status_code} - {response.text}")
-      error_message = "Failed to generate the cover letter due to an API error. Please try again."
-      return render(request, 'error_page.html', {'error_message': error_message})
+    # Log the error content and display an error message to the user
+    print(f"OpenAI API Error: {response.status_code} - {response.text}")
+    error_message = "Failed to generate the cover letter due to an API error. Please try again."
+    return render(request, 'error_page.html', {'error_message': error_message})
 
   response_data = response.json()
 
   # Error checks
   if 'choices' not in response_data or not response_data['choices'] or 'text' not in response_data['choices'][0]:
-      error_message = "Failed to generate the cover letter. Please try again."
-      return render(request, 'error_page.html', {'error_message': error_message})
+    error_message = "Failed to generate the cover letter. Please try again."
+    return render(request, 'error_page.html', {'error_message': error_message})
 
   cover_letter = response_data['choices'][0]['text'].strip()
   cleaned_cover_letter = strip_html_tags(cover_letter) # THIS ISN'T BEING USED, BUT MAYBE NEED FOR LATER
@@ -283,41 +160,58 @@ def generate_cover_letter(request, job_index):
 
 @login_required
 def download_cover_letter(request, cover_letter_id=None):
-    # If cover_letter_id is provided, it means we are serving an already-saved PDF
-    if cover_letter_id:
-        cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
-        pdf = cover_letter.pdf_file.read()
+  # If cover_letter_id is provided, it means we are serving an already-saved PDF
+  if cover_letter_id:
+    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
+    pdf = cover_letter.pdf_file.read()
 
-        # Serve the PDF as a response
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
-        return response
-
-    # If cover_letter_id is not provided, we generate the PDF on-the-fly
-    cover_letter_text = request.POST.get('cover_letter_text')
-
-    # Convert newline characters to <br> for proper HTML rendering
-    cover_letter_html = cover_letter_text.replace('\n', '<br>')
-
-    # Convert the HTML to PDF
-    pdf = pdfkit.from_string(cover_letter_html, False)
-
-    # Save the generated PDF to the database
-    cover_letter_record = CoverLetter(
-      user=request.user, 
-      pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
-    )
-
-    cover_letter_record.save()
-
-    # Serve the generated PDF as a response
+    # Serve the PDF as a response
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
     return response
+
+  # If cover_letter_id is not provided, we generate the PDF on-the-fly
+  cover_letter_text = request.POST.get('cover_letter_text')
+
+  # Convert newline characters to <br> for proper HTML rendering
+  cover_letter_html = cover_letter_text.replace('\n', '<br>')
+
+  # Convert the HTML to PDF
+  pdf = pdfkit.from_string(cover_letter_html, False)
+
+  # Save the generated PDF to the database
+  cover_letter_record = CoverLetter(
+    user=request.user, 
+    pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+  )
+
+  cover_letter_record.save()
+
+  # Serve the generated PDF as a response
+  response = HttpResponse(pdf, content_type='application/pdf')
+  response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+  return response
 
 
 @login_required
 def delete_cover_letter(request, letter_id):
-    cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
-    cover_letter.delete()
-    return redirect('profile')
+  cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+  cover_letter.delete()
+  return redirect('profile')
+
+
+def task_status(request, task_id):
+  task = run_scraper.AsyncResult(task_id)
+  response_data = {
+    'status': task.status,
+    'result': None,
+    'error': None
+  }
+
+  if task.status == 'SUCCESS':
+    response_data['result'] = task.result
+  elif task.status == 'FAILURE':
+    # Handle exception and return a string representation of the error
+    response_data['error'] = str(task.result)
+
+  return JsonResponse(response_data)

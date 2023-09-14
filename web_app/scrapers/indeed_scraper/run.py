@@ -4,26 +4,22 @@
 # To run this script set the env variable $SCRAPFLY_KEY with your scrapfly API key:
 # $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
 # export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH
-# poetry run python web_app/scrapers/indeed_scraper/run.py
+# poetry run python web_app/scrapers/indeed_scraper/run.py --job_description "Python Developer" --location "Seattle"
 
-# import asyncio-NEEDED FOR TESTING
+
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent.parent))
-
 import json
-from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
-import web_app.scrapers.indeed_scraper.indeed as indeed
+import argparse
 import asyncio
 
-# Change this to your absolute path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+from web_app.scrapers.indeed_scraper.indeed import BASE_CONFIG
+import web_app.scrapers.indeed_scraper.indeed as indeed
+
 output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
-
-# UNCOMMENT THESE FOR TESTING THIS FILE
-# job_specification = input('Enter job role: ')
-# job_specification = job_specification.replace(" ", "+")
-# location = input('Enter a location: ')
 
 async def run(job_specification, location):
   # enable scrapfly cache for basic use
@@ -43,6 +39,16 @@ async def run(job_specification, location):
   result_jobs = await indeed.scrape_jobs(job_keys)
   output.joinpath("jobs.json").write_text(json.dumps(result_jobs, indent=2, ensure_ascii=False))
 
-# UNCOMMENT THESE FOR TESTING THIS FILE
-# if __name__ == "__main__":
-#   asyncio.run(run(job_specification, location))
+
+def parse_arguments():  # <-- Add this function to parse command-line arguments
+  parser = argparse.ArgumentParser(description="Indeed.com Job Scraper")
+  parser.add_argument("--job_description", required=True, help="Job description to search for")
+  parser.add_argument("--location", required=True, help="Location to search")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  args = parse_arguments()
+  job_description = args.job_description
+  location = args.location
+  asyncio.run(run(job_description, location))
