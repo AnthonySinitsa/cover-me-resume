@@ -63,9 +63,10 @@ def job_search(request):
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('job_location')
 
-    asyncio.run(run(job_title, job_location))
+    # Send the scraping task to Celery
+    task = run_scraper.delay(job_title, job_location)
 
-    # Redirect to results page after scraping
+    # Redirect to results page after initiating scraping
     return redirect('job_results')
   return render(request, 'job_search.html')
 
