@@ -8,7 +8,7 @@ def run_scraper(job_title, job_location):
   commands = [
     f"export SCRAPFLY_KEY='{settings.SCRAPFLY_KEY}'",
     f"export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH",
-    "poetry run python web_app/scrapers/indeed_scraper/run.py"
+    f"poetry run python web_app/scrapers/indeed_scraper/run.py --job_description '{job_title}' --location '{job_location}'"
   ]
 
   # Join the commands with '&&' to run them consecutively
