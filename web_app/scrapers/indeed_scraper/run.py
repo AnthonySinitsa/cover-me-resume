@@ -4,10 +4,7 @@
 # To run this script set the env variable $SCRAPFLY_KEY with your scrapfly API key:
 # $ export $SCRAPFLY_KEY="your key from https://scrapfly.io/dashboard"
 # export PYTHONPATH=/home/anton/projects/cover-me-resume:$PYTHONPATH
-# poetry run python web_app/scrapers/indeed_scraper/run.py
-
-# After making these changes, you'll be able to run the script from the command line with the necessary arguments, like:
-# poetry run python web_app/scrapers/indeed_scraper/run.py --job_description "Software Engineer" --location "New York"
+# poetry run python web_app/scrapers/indeed_scraper/run.py --job_description "Python Developer" --location "Seattle"
 
 
 import sys
@@ -24,11 +21,6 @@ import web_app.scrapers.indeed_scraper.indeed as indeed
 # Change this to your absolute path
 output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
-
-# UNCOMMENT THESE FOR TESTING THIS FILE
-# job_specification = input('Enter job role: ')
-# job_specification = job_specification.replace(" ", "+")
-# location = input('Enter a location: ')
 
 async def run(job_specification, location):
   # enable scrapfly cache for basic use

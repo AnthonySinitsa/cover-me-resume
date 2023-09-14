@@ -205,9 +205,17 @@ def delete_cover_letter(request, letter_id):
 
 
 def task_status(request, task_id):
-  task_result = AsyncResult(task_id)
+  task = run_scraper.AsyncResult(task_id)
   response_data = {
-    'status': task_result.status,
-    'result': task_result.result
+    'status': task.status,
+    'result': None,
+    'error': None
   }
+
+  if task.status == 'SUCCESS':
+    response_data['result'] = task.result
+  elif task.status == 'FAILURE':
+    # Handle exception and return a string representation of the error
+    response_data['error'] = str(task.result)
+
   return JsonResponse(response_data)
