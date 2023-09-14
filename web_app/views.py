@@ -19,6 +19,7 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
 from .tasks import run_scraper
+from celery.result import AsyncResult
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -189,3 +190,12 @@ def delete_cover_letter(request, letter_id):
   cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
   cover_letter.delete()
   return redirect('profile')
+
+
+def task_status(request, task_id):
+  task_result = AsyncResult(task_id)
+  response_data = {
+    'status': task_result.status,
+    'result': task_result.result
+  }
+  return JsonResponse(response_data)

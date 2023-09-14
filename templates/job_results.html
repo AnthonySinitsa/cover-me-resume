@@ -10,3 +10,24 @@
         </li>
     {% endfor %}
 </ul>
+
+<script>
+    function checkTaskStatus(taskId) {
+        fetch(`/task_status/${taskId}/`).then(response => response.json()).then(data => {
+            if (data.status === 'SUCCESS') {
+                // Display the results
+                console.log(data.result);
+                // TODO: Process and display data.result as needed
+            } else if (data.status === 'FAILURE') {
+                console.error('Task failed');
+                // TODO: Handle task failure (e.g., display an error message)
+            } else {
+                // Task is still running, check again in a few seconds
+                setTimeout(() => checkTaskStatus(taskId), 5000);
+            }
+        });
+    }
+
+    // Start polling
+    checkTaskStatus('{{ task_id }}');  // Pass the task ID from the context to the JavaScript function
+</script>
