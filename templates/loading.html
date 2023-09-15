@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Loading...</h2>
+<p>Please wait while we scrape job listings for you.</p>
+<div class="loader">
+    <!-- You can place your loader animation or any other visual here -->
+    <!-- For instance, a simple text-based loader -->
+    <p>Loading...</p>
+</div>
+
+{% block extra_js %}
+<script>
+    function checkTaskStatus() {
+        console.log('Checking task status...');
+        fetch('/task_status/{{ task_id }}/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Task status:', data.status);
+            if (data.status === "SUCCESS" || data.status === "FAILURE") {
+                // If the task is done, redirect to the results page
+                window.location.href = '/job-results/{{ task_id }}/';
+            } else {
+                // If the task is still running, check again after a few seconds
+                setTimeout(checkTaskStatus, 5000);
+            }
+        });
+    }
+
+    // Start checking the task status immediately once the page is loaded
+    checkTaskStatus();
+</script>
+{% endblock %}
+
+
+{% endblock %}

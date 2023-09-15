@@ -61,8 +61,6 @@ def profile(request):
 
 
 def job_search(request):
-  context = {}
-
   if request.method == "POST":
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('location')
@@ -70,10 +68,9 @@ def job_search(request):
     # Send the scraping task to Celery
     task = run_scraper.delay(job_title, job_location)
 
-    # Add task_id to context so it can be used in the template
-    context['task_id'] = task.id
-
-  return render(request, 'job_search.html', context)
+    # Render the loading page
+    return render(request, 'loading.html', {'task_id': task.id})
+  return render(request, 'job_search.html')
 
 
 def job_results(request, task_id=None):
@@ -199,18 +196,10 @@ def delete_cover_letter(request, letter_id):
   return redirect('profile')
 
 
-def task_status(request, task_id):
-  task = run_scraper.AsyncResult(task_id)
+def check_task_status(request, task_id):
+  task = AsyncResult(task_id)
   response_data = {
     'status': task.status,
-    'result': None,
-    'error': None
+    'result': task.result,
   }
-
-  if task.status == 'SUCCESS':
-    response_data['result'] = task.result
-  elif task.status == 'FAILURE':
-    # Handle exception and return a string representation of the error
-    response_data['error'] = str(task.result)
-
   return JsonResponse(response_data)
