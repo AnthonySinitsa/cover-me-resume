@@ -20,6 +20,7 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
 from .tasks import run_scraper
+from celery.result import AsyncResult
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -64,16 +65,11 @@ def job_search(request):
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('location')
 
-    # Print the fetched values
-    # print(f"Job Title: {job_title}")
-    # print(f"Job Location: {job_location}")
-
     # Send the scraping task to Celery
     task = run_scraper.delay(job_title, job_location)
 
-    # Redirect to results page after initiating scraping
-    results_url = reverse('job_results', args=[task.id])
-    return redirect(results_url)
+    # Render the loading page
+    return render(request, 'loading.html', {'task_id': task.id})
   return render(request, 'job_search.html')
 
 
@@ -200,18 +196,10 @@ def delete_cover_letter(request, letter_id):
   return redirect('profile')
 
 
-def task_status(request, task_id):
-  task = run_scraper.AsyncResult(task_id)
+def check_task_status(request, task_id):
+  task = AsyncResult(task_id)
   response_data = {
     'status': task.status,
-    'result': None,
-    'error': None
+    'result': task.result,
   }
-
-  if task.status == 'SUCCESS':
-    response_data['result'] = task.result
-  elif task.status == 'FAILURE':
-    # Handle exception and return a string representation of the error
-    response_data['error'] = str(task.result)
-
   return JsonResponse(response_data)
