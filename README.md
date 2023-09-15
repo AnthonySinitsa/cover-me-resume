@@ -1,14 +1,8 @@
 # Cover-My-Resume
 
-python manage.py migrate
+## DONE
 
-python manage.py createsuperuser
-
-run: python manage.py runserver
-
-## TODO
-
-DONE: User Registration, However I would like to add email verification later in the future...
+DONE: User Registration
 
 DONE: Resume Uploader: for the most part finished, just need add resume to database
 
@@ -24,35 +18,50 @@ DONE: Add to profile page to show all the cover letters generated
 
 DONE: Add a page for user to enter job and location to start the scraper
 
-When running the scraper it shouldn't take you immediately to the results page as it will display the previous results
+DONE: When running the scraper it shouldn't take you immediately to the results page as it will display the previous results
 
-Add loading screen/bar till the scraper finishes
+DONE: Add loading screen/bar till the scraper finishes
 
-Add option to delete account
+## TODO
 
-before deployment, make sure add media files that the user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3
+fix up the job-results page to have a nav bar at top
 
-Styling and User Experience: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, React, or Vue.js if you're familiar with them.
+add option to delete account
 
-Tests: Write tests to ensure the functionality of your site. Django's built-in testing framework can be very helpful.
+email verification
 
-Deployment: Once you're satisfied with your site in the development environment, plan for deployment to a live server.
+BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
+
+Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
+
+Styling and User Experience: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
+
+Deploy :D
+
+## SETUP
 
 ```,
-This project MUST use poetry, 
+ ***This project MUST use poetry, just get rid of stinky .venv***
 
-COMMANDS:
+COMMANDS🌈:
+
+$ pip install poetry
+
+$ python manage.py makemigrations
+
+$ python manage.py migrate
+
+$ python manage.py createsuperuser
+
+$ python manage.py runserver
+  ^ seperate terminal
 
 $ poetry shell
-  ^ starts environment (make sure to turn off .venv if installed)
-
-$ exit
-  ^ deactivate
+  ^ starts environment ($ deactivate)
 
 $ redis-server
-  ^ starts redis server at localhost:6379
-    ^ run the server on a console and then open up another console to 
-  run ↓ this command in a new console
+  ^ seperate terminal (runs redis server)
+
 $ celery -A cover_me worker --loglevel=info
-  ^ starts the celery worker
+  ^ seperate terminal (starts the celery worker)
 ```
