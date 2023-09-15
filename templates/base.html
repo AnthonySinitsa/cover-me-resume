@@ -14,7 +14,7 @@
                 <a href="{% url 'profile' %}">Profile</a>
                 <a href="{% url 'logout' %}">Logout</a>
                 <a href="{% url 'upload-resume' %}">Upload Resume</a>
-                <a href="{% url 'job_search' %}">Start Job Scraper</a>
+                <a href="{% url 'job_search' %}">Job Search</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
                 <a href="{% url 'register' %}">Register</a>
@@ -31,5 +31,7 @@
     <footer>
         <!-- Common footer content -->
     </footer>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

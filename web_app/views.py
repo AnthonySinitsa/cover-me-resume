@@ -20,6 +20,7 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
 from .tasks import run_scraper
+from celery.result import AsyncResult
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -60,21 +61,19 @@ def profile(request):
 
 
 def job_search(request):
+  context = {}
+
   if request.method == "POST":
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('location')
 
-    # Print the fetched values
-    # print(f"Job Title: {job_title}")
-    # print(f"Job Location: {job_location}")
-
     # Send the scraping task to Celery
     task = run_scraper.delay(job_title, job_location)
 
-    # Redirect to results page after initiating scraping
-    results_url = reverse('job_results', args=[task.id])
-    return redirect(results_url)
-  return render(request, 'job_search.html')
+    # Add task_id to context so it can be used in the template
+    context['task_id'] = task.id
+
+  return render(request, 'job_search.html', context)
 
 
 def job_results(request, task_id=None):
