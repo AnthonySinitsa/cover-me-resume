@@ -67,3 +67,30 @@ $ redis-server
 $ celery -A cover_me worker --loglevel=info
   ^ seperate terminal (starts the celery worker)
 ```
+
+```,
+for this step:
+Upload the key to your server: If your Django project is running on a server, you'll need to securely upload this .json file to your server.
+is this assuming the website is deployed?
+ChatGPT
+Yes, the step to upload the key to your server assumes that your Django project is deployed on a remote server. If you're currently working on your local development machine, you can simply store the .json file in a secure location on your local system and provide the local path to it in GS_CREDENTIALS.
+
+However, when you do deploy your Django project to a production server, you'll need to transfer the .json service account key to the server and adjust the GS_CREDENTIALS path accordingly.
+
+Additionally, always remember:
+
+Never commit the .json service account key to version control (like Git). It contains sensitive credentials.
+When deploying, ensure that only the necessary personnel or processes can read the .json file, as it provides access to your Google Cloud Storage. This usually means setting tight file permissions on it.
+```
+
+1. Test:
+Before deploying, test the file uploads locally to ensure they're being uploaded to GCS.
+
+1. Clean-up:
+Remember to adjust permissions on your GCS bucket to ensure that only the required entities can read or write to it. Avoid making it public unless necessary.
+
+1. Going further:
+You can configure the django-storages backend to use different storage classes, enable automatic file overwriting, or specify a custom location (sub-directory) within your bucket.
+Consider enabling HTTPS for your bucket if you're serving user-facing content.
+Regularly review and manage storage costs. GCS charges for storage space, network costs, and operations.
+By following these steps, you should have your Django application storing files on GCS!
