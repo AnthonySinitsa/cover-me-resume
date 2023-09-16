@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'web_app',
     'django_celery_results',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,17 @@ LOGOUT_REDIRECT_URL = '/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
+GS_CREDENTIALS = os.environ.get('GS_CREDENTIALS')
+GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
+
+print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
+print("GS_BUCKET_NAME:", GS_BUCKET_NAME)
+print("GS_CREDENTIALS:", GS_CREDENTIALS)
+print("GS_PROJECT_ID:", GS_PROJECT_ID)
+
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 

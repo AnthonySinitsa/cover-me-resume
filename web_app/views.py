@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from .forms import UserRegisterForm, ResumeUploadForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from .models import Resume, CoverLetter
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
@@ -203,3 +204,12 @@ def check_task_status(request, task_id):
     'result': task.result,
   }
   return JsonResponse(response_data)
+
+
+@login_required
+def delete_account(request):
+  if request.method == 'POST':
+    user = request.user
+    user.delete()
+    logout(request)
+    return redirect('/')
