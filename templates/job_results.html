@@ -1,5 +1,9 @@
 {% load custom_filters %}
-
+<head>
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+    </nav>
+</head>
 <ul>
     {% for index, job in jobs|enumerate %}
         <li>

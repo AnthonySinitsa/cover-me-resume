@@ -22,9 +22,9 @@ DONE: When running the scraper it shouldn't take you immediately to the results 
 
 DONE: Add loading screen/bar till the scraper finishes
 
-## TODO
+DONE: fix up the job-results page to have a nav bar at top
 
-fix up the job-results page to have a nav bar at top
+## TODO
 
 add option to delete account
 
