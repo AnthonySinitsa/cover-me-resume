@@ -22,4 +22,45 @@
     {% endfor %}
 </ul>
 
+<!-- Delete Account Button -->
+<button id="deleteAccountBtn">Delete Account</button>
+
+<!-- Modal for Account Deletion Confirmation -->
+<div id="deleteAccountModal" style="display:none;">
+    <p>Are you sure you want to delete your account?</p>
+    <button id="confirmDeleteBtn">Yes</button>
+    <button id="cancelDeleteBtn">No</button>
+</div>
+
+<script>
+document.getElementById("deleteAccountBtn").addEventListener("click", function() {
+    // Show the modal when the delete button is clicked
+    document.getElementById("deleteAccountModal").style.display = "block";
+});
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", function() {
+    // Send a POST request to delete the account
+    fetch('/delete_account/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect to home or login page after successful deletion
+            window.location.href = '/';
+        } else {
+            alert("Error deleting account.");
+        }
+    });
+});
+
+document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
+    // Hide the modal if user cancels
+    document.getElementById("deleteAccountModal").style.display = "none";
+});
+</script>
+
+
 {% endblock %}

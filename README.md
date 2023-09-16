@@ -30,6 +30,8 @@ add option to delete account
 
 email verification
 
+can't have more than one account on same email address
+
 BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
 
 Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
