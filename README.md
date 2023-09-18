@@ -94,3 +94,8 @@ You can configure the django-storages backend to use different storage classes, 
 Consider enabling HTTPS for your bucket if you're serving user-facing content.
 Regularly review and manage storage costs. GCS charges for storage space, network costs, and operations.
 By following these steps, you should have your Django application storing files on GCS!
+
+export DEFAULT_FILE_STORAGE=''
+export GS_BUCKET_NAME=''
+export GS_CREDENTIALS=''
+export GS_PROJECT_ID=''
