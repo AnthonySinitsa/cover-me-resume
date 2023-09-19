@@ -13,6 +13,8 @@ scrapy = "^2.10.0"
 celery = "^5.3.4"
 redis = "^5.0.0"
 django-celery-results = "^2.5.1"
+django-storages = "^1.14"
+google-auth = "^2.23.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"

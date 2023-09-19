@@ -7,6 +7,8 @@ ENV/
 .DS_Store
 .history
 
+jsonGCS
+coverme-392221-d98a61610b4c.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
