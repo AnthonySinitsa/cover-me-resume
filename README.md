@@ -99,3 +99,7 @@ export DEFAULT_FILE_STORAGE=''
 export GS_BUCKET_NAME=''
 export GS_CREDENTIALS=''
 export GS_PROJECT_ID=''
+
+This will get rid of the .venv visual bug
+
+export PS1="%{%}➜ %{%}%c%{%} $(git_prompt_info)"
