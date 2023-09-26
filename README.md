@@ -100,8 +100,11 @@ Regularly review and manage storage costs. GCS charges for storage space, networ
 By following these steps, you should have your Django application storing files on GCS!
 
 export DEFAULT_FILE_STORAGE=''
+
 export GS_BUCKET_NAME=''
+
 export GS_CREDENTIALS=''
+
 export GS_PROJECT_ID=''
 
 This will get rid of the .venv visual bug
