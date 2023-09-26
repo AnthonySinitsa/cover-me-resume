@@ -19,6 +19,7 @@
         <li>
             {{ letter.pdf_file.name|filename }} - {{ letter.created_at }} 
             <a href="{% url 'download_cover_letter_by_id' letter.id %}">Download</a> | 
+            <a href="{% url 'edit_cover_letter' letter.id %}">Edit</a> |
             <a href="{% url 'delete_cover_letter' letter.id %}">Delete</a>
         </li>
     {% endfor %}
