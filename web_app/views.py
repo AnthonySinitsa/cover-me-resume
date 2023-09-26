@@ -178,9 +178,12 @@ def download_cover_letter(request, cover_letter_id=None):
     cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
     pdf = cover_letter.pdf_file.read()
 
+    # Extract the custom filename from the stored file name
+    custom_filename = cover_letter.pdf_file.name.split("/")[-1].rsplit("_", 1)[0]
+
     # Serve the PDF as a response
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{cover_letter.pdf_file.name}"'
+    response['Content-Disposition'] = f'attachment; filename="{custom_filename}.pdf"'
     return response
 
   # If cover_letter_id is not provided, we generate the PDF on-the-fly
