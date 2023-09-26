@@ -212,7 +212,13 @@ def download_cover_letter(request, cover_letter_id=None):
 @login_required
 def delete_cover_letter(request, letter_id):
   cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+  
+  # Delete the file from GCS
+  cover_letter.pdf_file.delete(save=False)  # The save=False prevents saving the model after file deletion
+  
+  # Delete the cover letter record from the database
   cover_letter.delete()
+
   return redirect('profile')
 
 

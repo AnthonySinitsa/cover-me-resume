@@ -30,9 +30,9 @@ DONE: BEFORE DEPLOYMENT: add media files that user inputs be handled by a web se
 
 DONE: change so that the user can only have one resume, new upload overwrites the old resume
 
-## TODO
+DONE: when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
 
-when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
+## TODO
 
 add an edit button to the cover letter in the profile page
 
