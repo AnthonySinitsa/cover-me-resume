@@ -32,7 +32,9 @@ DONE: change so that the user can only have one resume, new upload overwrites th
 
 ## TODO
 
-add an edit button to both the resume and cover letter in the profile page
+when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
+
+add an edit button to the cover letter in the profile page
 
 email verification
 
