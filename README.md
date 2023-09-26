@@ -32,8 +32,6 @@ BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server o
 
 email verification
 
-can't have more than one account on same email address
-
 Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
 
 Styling and User Experience: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React

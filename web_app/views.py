@@ -4,6 +4,7 @@ import openai
 import requests
 import pdfkit
 import asyncio
+from io import BytesIO
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
@@ -115,7 +116,8 @@ def generate_cover_letter(request, job_index):
     resume = Resume.objects.filter(user=request.user).order_by('-uploaded_at').first()
     if not resume:
       raise ValueError("No resume found for this user.")
-    resume_text = get_user_resume_as_text(resume.resume_file.path)
+    resume_content = resume.resume_file.read()
+    resume_text = extract_text_from_pdf(resume_content)
   except ValueError as e:
     # Handle the error, e.g., by returning an error message to the user.
     error_message = str(e)
