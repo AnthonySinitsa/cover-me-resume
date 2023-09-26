@@ -46,13 +46,27 @@ def upload_resume(request):
   if request.method == 'POST':
     form = ResumeUploadForm(request.POST, request.FILES)
     if form.is_valid():
-      resume = form.save(commit=False)
-      resume.user = request.user
-      resume.save()
-      return redirect('home') # or wherever you want to redirect after successful upload
+      # Check if the user already has a resume
+      existing_resume = Resume.objects.filter(user=request.user).first()
+      
+      if existing_resume:
+        # If a resume exists, delete the old file from storage
+        existing_resume.resume_file.delete()
+        
+        # Update the resume file with the new one
+        existing_resume.resume_file = form.cleaned_data['resume_file']
+        existing_resume.save()
+      else:
+        # If no resume exists, create a new Resume object
+        resume = form.save(commit=False)
+        resume.user = request.user
+        resume.save()
+            
+      return redirect('home')  # or wherever you want to redirect after successful upload
   else:
     form = ResumeUploadForm()
   return render(request, 'upload_resume.html', {'form': form})
+
 
 
 @login_required
