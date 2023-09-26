@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
+
 
 {% block content %}
 <h2>Your Uploaded Resumes:</h2>
 <ul>
     {% for resume in resumes %}
         <li>
-            <a href="{{ resume.resume_file.url }}">{{ resume.resume_file.name }}</a>
+            <a href="{{ resume.resume_file.url }}">{{ resume.resume_file.name|resume_name }}</a>
             <!-- Link to download or view the resume -->
         </li>
     {% endfor %}
@@ -15,7 +17,7 @@
 <ul>
     {% for letter in cover_letters %}
         <li>
-            Cover Letter - {{ letter.created_at }} 
+            {{ letter.pdf_file.name|filename }} - {{ letter.created_at }} 
             <a href="{% url 'download_cover_letter_by_id' letter.id %}">Download</a> | 
             <a href="{% url 'delete_cover_letter' letter.id %}">Delete</a>
         </li>

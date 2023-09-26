@@ -186,23 +186,26 @@ def download_cover_letter(request, cover_letter_id=None):
   # If cover_letter_id is not provided, we generate the PDF on-the-fly
   cover_letter_text = request.POST.get('cover_letter_text')
 
+  # Retrieve the custom filename from POST data
+  custom_filename = request.POST.get('cover_letter_filename', 'Cover_Letter')
+
   # Convert newline characters to <br> for proper HTML rendering
   cover_letter_html = cover_letter_text.replace('\n', '<br>')
 
   # Convert the HTML to PDF
   pdf = pdfkit.from_string(cover_letter_html, False)
 
-  # Save the generated PDF to the database
+  # Save the generated PDF to the database with the custom filename
   cover_letter_record = CoverLetter(
     user=request.user, 
-    pdf_file=ContentFile(pdf, name=f"cover_letter_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+    pdf_file=ContentFile(pdf, name=f"{custom_filename}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
   )
 
   cover_letter_record.save()
 
-  # Serve the generated PDF as a response
+  # Serve the generated PDF as a response using the custom filename
   response = HttpResponse(pdf, content_type='application/pdf')
-  response['Content-Disposition'] = 'attachment; filename="cover_letter.pdf"'
+  response['Content-Disposition'] = f'attachment; filename="{custom_filename}.pdf"'
   return response
 
 
