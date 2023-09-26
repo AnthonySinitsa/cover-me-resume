@@ -34,11 +34,13 @@ DONE: when editing the cover letter, have an option to name the cover letter fil
 
 DONE: add an edit button to the cover letter in the profile page
 
+DONE: when redownloading the cover letter, the name should be the same as it is displayed in the profile
+
 ## TODO
 
-when redownloading the cover letter, the name should be the same as it is displayed in the profile
-
 display the users username to show which account they are using
+
+Don't have an Upload Resume section in the nav, just put the resume upload in the home page
 
 email verification: email should thank the user for creating an account with us
 
