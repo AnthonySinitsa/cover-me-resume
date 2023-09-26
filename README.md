@@ -28,9 +28,9 @@ DONE: add option to delete account
 
 DONE: BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
 
-## TODO
+DONE: change so that the user can only have one resume, new upload overwrites the old resume
 
-change so that the user can only have one resume, new upload overwrites the old resume
+## TODO
 
 add an edit button to both the resume and cover letter in the profile page
 
