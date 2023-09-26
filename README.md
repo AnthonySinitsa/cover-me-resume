@@ -28,11 +28,13 @@ DONE: add option to delete account
 
 DONE: BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
 
+DONE: change so that the user can only have one resume, new upload overwrites the old resume
+
 ## TODO
 
-change so that the user can only have one resume, new upload overwrites the old resume
+when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
 
-add an edit button to both the resume and cover letter in the profile page
+add an edit button to the cover letter in the profile page
 
 email verification
 

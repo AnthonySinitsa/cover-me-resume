@@ -25,3 +25,4 @@ class CoverLetter(models.Model):
     content = models.TextField()
     pdf_file = models.FileField(upload_to='cover_letters/', null=True, blank=True)
     generated_at = models.DateTimeField(default=timezone.now)
+    filename = models.CharField(max_length=255, default='Cover_Letter')
