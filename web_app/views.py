@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .forms import UserRegisterForm, ResumeUploadForm
+from .forms import UserRegisterForm, ResumeUploadForm, EditCoverLetterForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .models import Resume, CoverLetter
@@ -198,6 +198,7 @@ def download_cover_letter(request, cover_letter_id=None):
   # Save the generated PDF to the database with the custom filename
   cover_letter_record = CoverLetter(
     user=request.user, 
+    content=cover_letter_text,  # <-- This line saves the text content
     pdf_file=ContentFile(pdf, name=f"{custom_filename}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
   )
 
@@ -238,3 +239,18 @@ def delete_account(request):
     user.delete()
     logout(request)
     return redirect('/')
+  
+
+@login_required
+def edit_cover_letter(request, letter_id):
+  cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+
+  if request.method == 'POST':
+    form = EditCoverLetterForm(request.POST, instance=cover_letter)
+    if form.is_valid():
+      form.save()
+      # Redirect to profile or another page after successful edit
+      return redirect('profile')
+  else:
+    form = EditCoverLetterForm(instance=cover_letter)
+  return render(request, 'edit_cover_letter.html', {'form': form})

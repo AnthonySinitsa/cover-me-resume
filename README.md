@@ -36,11 +36,15 @@ DONE: when editing the cover letter, have an option to name the cover letter fil
 
 add an edit button to the cover letter in the profile page
 
-email verification
+display the users username to show which account they are using
+
+when redownloading the cover letter, the name should be the same as it is displayed in the profile
+
+email verification: email should thank the user for creating an account with us
 
 Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
 
-Styling and User Experience: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
+Styling: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
 
 Deploy :D
 

@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import CoverLetter
 
-# Register your models here.
+@admin.register(CoverLetter)
+class CoverLetterAdmin(admin.ModelAdmin):
+  list_display = ['id', 'user', 'generated_at'] 
