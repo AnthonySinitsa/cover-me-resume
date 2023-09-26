@@ -129,10 +129,10 @@ def generate_cover_letter(request, job_index):
     "Authorization": f"Bearer {openai_api_key}",
     "Content-Type": "application/json",
   }
-  prompt_text = f"Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
+  prompt_text = f"I want you to act as a cover letter writer. Given the job description: '{job_description}' and the resume: '{resume_text}', generate a suitable cover letter."
   data = {
     "prompt": prompt_text,
-    "max_tokens": 500  # Just an example, adjust as needed.
+    "max_tokens": 1000  # Just an example, adjust as needed.
   }
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
 
