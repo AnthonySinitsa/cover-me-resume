@@ -32,9 +32,9 @@ DONE: change so that the user can only have one resume, new upload overwrites th
 
 DONE: when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
 
-## TODO
+DONE: add an edit button to the cover letter in the profile page
 
-add an edit button to the cover letter in the profile page
+## TODO
 
 display the users username to show which account they are using
 
