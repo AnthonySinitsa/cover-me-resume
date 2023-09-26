@@ -26,9 +26,13 @@ DONE: fix up the job-results page to have a nav bar at top
 
 DONE: add option to delete account
 
+DONE: BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
+
 ## TODO
 
-BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
+change so that the user can only have one resume, new upload overwrites the old resume
+
+add an edit button to both the resume and cover letter in the profile page
 
 email verification
 
@@ -42,6 +46,8 @@ Deploy :D
 
 ```,
  ***This project MUST use poetry, just get rid of stinky .venv***
+ ***actualy i don't think you have to use poetry anymore***
+ ***just use a venv***
 
 COMMANDS🌈:
 
