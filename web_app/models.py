@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 
 class Resume(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     resume_file = models.FileField(upload_to='resumes/', null=True, blank=True) # Defines where the files will be uploaded
     uploaded_at = models.DateTimeField(default=timezone.now)
     
