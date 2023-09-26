@@ -36,9 +36,9 @@ DONE: add an edit button to the cover letter in the profile page
 
 ## TODO
 
-display the users username to show which account they are using
-
 when redownloading the cover letter, the name should be the same as it is displayed in the profile
+
+display the users username to show which account they are using
 
 email verification: email should thank the user for creating an account with us
 
