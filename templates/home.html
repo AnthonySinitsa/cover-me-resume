@@ -3,4 +3,12 @@
 {% block content %}
 <h1>Welcome to Cover Me!</h1>
 <p>Some introductory text or content for your homepage.</p>
+
+<h2>Upload Resume</h2>
+<form method="post" enctype="multipart/form-data" action="{% url 'home' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
 {% endblock %}

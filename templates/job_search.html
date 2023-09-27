@@ -3,7 +3,7 @@
 {% block content %}
 <h2>Start Job Scraper</h2>
 
-<form method="post" action="{% url 'job_search' %}" id="jobSearchForm">
+<form method="post" action="{% url 'job_search' %}" id="JobSearchForm">
     {% csrf_token %}
     <div>
         <label for="job_title">Job Title:</label>
@@ -20,5 +20,4 @@
     </div>
 </form>
 
-<div class="loader" id="loadingSpinner"></div>
 {% endblock %}
