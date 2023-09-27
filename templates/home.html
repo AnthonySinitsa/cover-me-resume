@@ -7,8 +7,25 @@
 <h2>Upload Resume</h2>
 <form method="post" enctype="multipart/form-data" action="{% url 'home' %}">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ resume_form.as_p }}
     <button type="submit">Upload</button>
+</form>
+
+<h2>Start Job Scraper</h2>
+<form method="post" action="{% url 'home' %}" id="JobSearchForm">
+    {% csrf_token %}
+    <input type="hidden" name="job_search" value="1">  <!-- Hidden input to distinguish form submissions -->
+    <div>
+        <label for="job_title">Job Title:</label>
+        <input type="text" name="job_title" required>
+    </div>
+    <div>
+        <label for="location">Location:</label>
+        <input type="text" name="location" required>
+    </div>
+    <div>
+        <button type="submit">Start Scraping</button>
+    </div>
 </form>
 
 {% endblock %}

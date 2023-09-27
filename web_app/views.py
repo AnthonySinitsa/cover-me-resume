@@ -19,6 +19,7 @@ from .utils.pdf_utils import extract_text_from_pdf
 from .utils.text_utils import strip_html_tags
 from wsgiref.util import FileWrapper
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
 from .tasks import run_scraper
@@ -43,62 +44,56 @@ def register(request):
   
 @login_required
 def home(request):
-  if request.method == 'POST':
-    form = ResumeUploadForm(request.POST, request.FILES)
-    if form.is_valid():
-      # Check if the user already has a resume
-      existing_resume = Resume.objects.filter(user=request.user).first()
-      
-      if existing_resume:
-        # If a resume exists, delete the old file from storage
-        existing_resume.resume_file.delete()
-        
-        # Update the resume file with the new one
-        existing_resume.resume_file = form.cleaned_data['resume_file']
-        existing_resume.save()
-      else:
-        # If no resume exists, create a new Resume object
-        resume = form.save(commit=False)
-        resume.user = request.user
-        resume.save()
-
-      # Do not redirect, as we want to stay on the same page
-      form = ResumeUploadForm()  # Reset the form after successful upload
-  else:
-    form = ResumeUploadForm()
-
-  context = {
-    'resume_form': form
-  }
-  return render(request, 'home.html', {'form': form})
-
-
-@login_required
-def upload_resume(request):
-  if request.method == 'POST':
-    form = ResumeUploadForm(request.POST, request.FILES)
-    if form.is_valid():
-      # Check if the user already has a resume
-      existing_resume = Resume.objects.filter(user=request.user).first()
-      
-      if existing_resume:
-        # If a resume exists, delete the old file from storage
-        existing_resume.resume_file.delete()
-        
-        # Update the resume file with the new one
-        existing_resume.resume_file = form.cleaned_data['resume_file']
-        existing_resume.save()
-      else:
-        # If no resume exists, create a new Resume object
-        resume = form.save(commit=False)
-        resume.user = request.user
-        resume.save()
+    context = {}
+    job_searched = False
+    
+    if request.method == 'POST':
+        # Resume Upload
+        resume_form = ResumeUploadForm(request.POST, request.FILES)
+        if resume_form.is_valid():
+            # Check if the user already has a resume
+            existing_resume = Resume.objects.filter(user=request.user).first()
             
-      return redirect('home')
-  else:
-    form = ResumeUploadForm()
-  return render(request, 'upload_resume.html', {'form': form})
+            if existing_resume:
+                # If a resume exists, delete the old file from storage
+                existing_resume.resume_file.delete()
+                
+                # Update the resume file with the new one
+                existing_resume.resume_file = resume_form.cleaned_data['resume_file']
+                try:
+                    existing_resume.save()
+                except ValidationError as e:
+                    print(f"Error uploading resume: {e}")
+                    # Optionally, you can add an error message to the context
+                    context['upload_error'] = "Failed to upload resume. Please try again."
 
+            else:
+                # If no resume exists, create a new Resume object
+                resume = resume_form.save(commit=False)
+                resume.user = request.user
+                try:
+                    resume.save()
+                except ValidationError as e:
+                    print(f"Error uploading resume: {e}")
+                    context['upload_error'] = "Failed to upload resume. Please try again."
+        
+        # Job Search
+        job_title = request.POST.get('job_title')
+        job_location = request.POST.get('location')
+        if job_title and job_location:
+            # Send the scraping task to Celery
+            task = run_scraper.delay(job_title, job_location)
+
+            # Set a flag to indicate a job search was initiated
+            job_searched = True
+            context['task_id'] = task.id
+    
+    # If job search was initiated, render the loading page, else render home page
+    if job_searched:
+        return render(request, 'loading.html', context)
+    else:
+        context['resume_form'] = ResumeUploadForm()
+        return render(request, 'home.html', context)
 
 
 @login_required
@@ -108,17 +103,17 @@ def profile(request):
   return render(request, 'profile.html', {'resumes': resumes, 'cover_letters': cover_letters})
 
 
-def job_search(request):
-  if request.method == "POST":
-    job_title = request.POST.get('job_title')
-    job_location = request.POST.get('location')
+# def job_search(request):
+#   if request.method == "POST":
+#     job_title = request.POST.get('job_title')
+#     job_location = request.POST.get('location')
 
-    # Send the scraping task to Celery
-    task = run_scraper.delay(job_title, job_location)
+#     # Send the scraping task to Celery
+#     task = run_scraper.delay(job_title, job_location)
 
-    # Render the loading page
-    return render(request, 'loading.html', {'task_id': task.id})
-  return render(request, 'job_search.html')
+#     # Render the loading page
+#     return render(request, 'loading.html', {'task_id': task.id})
+#   return render(request, 'job_search.html')
 
 
 def job_results(request, task_id=None):

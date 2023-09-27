@@ -36,7 +36,11 @@ DONE: add an edit button to the cover letter in the profile page
 
 DONE: when redownloading the cover letter, the name should be the same as it is displayed in the profile
 
+DONE: Don't have an Upload Resume section in the nav, just put the resume upload in the home page
+
 ## TODO
+
+error with generating a cover letter
 
 add an about page
 
@@ -45,8 +49,6 @@ make sure job search is specific to each user
 add a bug tracker
 
 display the users username to show which account they are using
-
-Don't have an Upload Resume section in the nav, just put the resume upload in the home page
 
 email verification: email should thank the user for creating an account with us
 
