@@ -38,6 +38,12 @@ DONE: when redownloading the cover letter, the name should be the same as it is 
 
 ## TODO
 
+add an about page
+
+make sure job search is specific to each user
+
+add a bug tracker
+
 display the users username to show which account they are using
 
 Don't have an Upload Resume section in the nav, just put the resume upload in the home page
