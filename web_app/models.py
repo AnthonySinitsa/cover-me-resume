@@ -6,7 +6,7 @@ from django.conf import settings
 
 class Resume(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    resume_file = models.FileField(upload_to='resumes/', null=True, blank=True) # Defines where the files will be uploaded
+    resume_file = models.FileField(upload_to='resumes/') # Defines where the files will be uploaded     null=True, blank=True
     uploaded_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
