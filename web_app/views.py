@@ -12,6 +12,7 @@ from django.urls import reverse
 from .forms import UserRegisterForm, ResumeUploadForm, EditCoverLetterForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.contrib import messages
 from .models import Resume, CoverLetter
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
@@ -19,6 +20,7 @@ from .utils.pdf_utils import extract_text_from_pdf
 from .utils.text_utils import strip_html_tags
 from wsgiref.util import FileWrapper
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from web_app.scrapers.indeed_scraper.run import run
@@ -44,76 +46,74 @@ def register(request):
   
 @login_required
 def home(request):
-    context = {}
-    job_searched = False
-    
-    if request.method == 'POST':
-        # Resume Upload
-        resume_form = ResumeUploadForm(request.POST, request.FILES)
-        if resume_form.is_valid():
-            # Check if the user already has a resume
-            existing_resume = Resume.objects.filter(user=request.user).first()
-            
-            if existing_resume:
-                # If a resume exists, delete the old file from storage
-                existing_resume.resume_file.delete()
-                
-                # Update the resume file with the new one
-                existing_resume.resume_file = resume_form.cleaned_data['resume_file']
-                try:
-                    existing_resume.save()
-                except ValidationError as e:
-                    print(f"Error uploading resume: {e}")
-                    # Optionally, you can add an error message to the context
-                    context['upload_error'] = "Failed to upload resume. Please try again."
-
-            else:
-                # If no resume exists, create a new Resume object
-                resume = resume_form.save(commit=False)
-                resume.user = request.user
-                try:
-                    resume.save()
-                except ValidationError as e:
-                    print(f"Error uploading resume: {e}")
-                    context['upload_error'] = "Failed to upload resume. Please try again."
+  context = {}
+  job_searched = False
+  
+  if request.method == 'POST':
+    # Resume Upload
+    resume_form = ResumeUploadForm(request.POST, request.FILES)
+    if resume_form.is_valid():
+      # Check if the user already has a resume
+      existing_resume = Resume.objects.filter(user=request.user).first()
+      
+      if existing_resume:
+        # If a resume exists, update the resume file with the new one
+        new_file = resume_form.cleaned_data['resume_file']
         
-        # Job Search
-        job_title = request.POST.get('job_title')
-        job_location = request.POST.get('location')
-        if job_title and job_location:
-            # Send the scraping task to Celery
-            task = run_scraper.delay(job_title, job_location)
+        if existing_resume.resume_file.name != new_file.name:
+            old_file_path = existing_resume.resume_file.url  # Store the old file path
+            
+            existing_resume.resume_file = new_file
+            try:
+                existing_resume.save()
+                print("Resume successfully uploaded.")
+            except ValidationError as e:
+                print(f"Error uploading resume: {e}")
+                context['upload_error'] = "Failed to upload resume. Please try again."
+            else:
+                # Delete the old file from storage if the new file is different and successfully saved
+                default_storage.delete(old_file_path)
+                print("Old resume file deleted.")
+        else:
+            print("The uploaded file is the same as the existing file.")
 
-            # Set a flag to indicate a job search was initiated
-            job_searched = True
-            context['task_id'] = task.id
+
+      else:
+        # If no resume exists, create a new Resume object
+        resume = resume_form.save(commit=False)
+        resume.user = request.user
+        try:
+          resume.save()
+        except ValidationError as e:
+          print(f"Error uploading resume: {e}")
+          context['upload_error'] = "Failed to upload resume. Please try again."
     
-    # If job search was initiated, render the loading page, else render home page
-    if job_searched:
-        return render(request, 'loading.html', context)
-    else:
-        context['resume_form'] = ResumeUploadForm()
-        return render(request, 'home.html', context)
+    # Job Search
+    job_title = request.POST.get('job_title')
+    job_location = request.POST.get('location')
+    if job_title and job_location:
+      # Send the scraping task to Celery
+      task = run_scraper.delay(job_title, job_location)
+
+      # Set a flag to indicate a job search was initiated
+      job_searched = True
+      context['task_id'] = task.id
+  
+  # If job search was initiated, render the loading page, else render home page
+  if job_searched:
+    return render(request, 'loading.html', context)
+  else:
+    context['resume_form'] = ResumeUploadForm()
+    return render(request, 'home.html', context)
 
 
 @login_required
 def profile(request):
   resumes = Resume.objects.filter(user=request.user).order_by('-uploaded_at')
   cover_letters = CoverLetter.objects.filter(user=request.user).order_by('-generated_at')
+  # Filter out resumes that do not have a file associated with them
+  resumes = [resume for resume in resumes if resume.resume_file]
   return render(request, 'profile.html', {'resumes': resumes, 'cover_letters': cover_letters})
-
-
-# def job_search(request):
-#   if request.method == "POST":
-#     job_title = request.POST.get('job_title')
-#     job_location = request.POST.get('location')
-
-#     # Send the scraping task to Celery
-#     task = run_scraper.delay(job_title, job_location)
-
-#     # Render the loading page
-#     return render(request, 'loading.html', {'task_id': task.id})
-#   return render(request, 'job_search.html')
 
 
 def job_results(request, task_id=None):
@@ -144,6 +144,13 @@ def get_user_resume_as_text(resume_file_path):
 
 @login_required
 def generate_cover_letter(request, job_index):
+  # print('generating cover letter for job index:', job_index)
+  # Ensure the user has uploaded a resume before proceeding
+  user_resume = Resume.objects.filter(user=request.user).first()
+  if user_resume is None or not user_resume.resume_file:
+    messages.error(request, "You need to upload a resume first.")
+    return redirect('home')
+  
   # Load the jobs from jobs.json
   with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
     jobs = json.load(file)
@@ -175,7 +182,12 @@ def generate_cover_letter(request, job_index):
     "prompt": prompt_text,
     "max_tokens": 1000  # Just an example, adjust as needed.
   }
+  
+  # print('sending request to OpenAI API...')
+  
   response = requests.post("https://api.openai.com/v1/engines/text-davinci-002/completions", headers=headers, data=json.dumps(data))
+
+  # print("Response received. Status code:", response.status_code)
 
   # Check the response status
   if response.status_code != 200:
@@ -189,11 +201,14 @@ def generate_cover_letter(request, job_index):
   # Error checks
   if 'choices' not in response_data or not response_data['choices'] or 'text' not in response_data['choices'][0]:
     error_message = "Failed to generate the cover letter. Please try again."
+    print('Error:', error_message)
     return render(request, 'error_page.html', {'error_message': error_message})
 
   cover_letter = response_data['choices'][0]['text'].strip()
   cleaned_cover_letter = strip_html_tags(cover_letter) # THIS ISN'T BEING USED, BUT MAYBE NEED FOR LATER
 
+  # print('generated cover letter:', cover_letter)
+  
   # Render the cover letter on a new page or however you wish to display it.
   return render(request, 'cover_letter_page.html', {'cover_letter': cover_letter})
 

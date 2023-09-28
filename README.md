@@ -38,9 +38,11 @@ DONE: when redownloading the cover letter, the name should be the same as it is 
 
 DONE: Don't have an Upload Resume section in the nav, just put the resume upload in the home page
 
+DONE: error with generating a cover letter
+
 ## TODO
 
-error with generating a cover letter
+multiple resumes can now be added, change back to only have one resume
 
 add an about page
 
