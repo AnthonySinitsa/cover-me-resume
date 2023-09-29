@@ -4,9 +4,13 @@ from django.utils import timezone
 from django.db import models
 from django.conf import settings
 
+def user_directory_path(instance, filename):
+    # This will save the file under <user_id>/resume.pdf
+    return f'{instance.user.id}/resume.pdf'
+
 class Resume(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    resume_file = models.FileField(upload_to='resumes/') # Defines where the files will be uploaded     null=True, blank=True
+    resume_file = models.FileField(upload_to=user_directory_path) # Defines where the files will be uploaded     null=True, blank=True
     uploaded_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):

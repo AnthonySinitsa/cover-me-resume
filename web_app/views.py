@@ -53,41 +53,21 @@ def home(request):
     # Resume Upload
     resume_form = ResumeUploadForm(request.POST, request.FILES)
     if resume_form.is_valid():
-      # Check if the user already has a resume
-      existing_resume = Resume.objects.filter(user=request.user).first()
+      # Always get the existing resume or create a new one if it doesn’t exist
+      existing_resume, created = Resume.objects.get_or_create(user=request.user)
       
-      if existing_resume:
-        # If a resume exists, update the resume file with the new one
-        new_file = resume_form.cleaned_data['resume_file']
-        
-        if existing_resume.resume_file.name != new_file.name:
-            old_file_path = existing_resume.resume_file.url  # Store the old file path
-            
-            existing_resume.resume_file = new_file
-            try:
-                existing_resume.save()
-                print("Resume successfully uploaded.")
-            except ValidationError as e:
-                print(f"Error uploading resume: {e}")
-                context['upload_error'] = "Failed to upload resume. Please try again."
-            else:
-                # Delete the old file from storage if the new file is different and successfully saved
-                default_storage.delete(old_file_path)
-                print("Old resume file deleted.")
-        else:
-            print("The uploaded file is the same as the existing file.")
-
-
-      else:
-        # If no resume exists, create a new Resume object
-        resume = resume_form.save(commit=False)
-        resume.user = request.user
-        try:
-          resume.save()
-        except ValidationError as e:
+      # Update the resume file with the new one
+      existing_resume.resume_file = resume_form.cleaned_data['resume_file']
+      try:
+          existing_resume.save()
+          print("Resume successfully uploaded.")
+      except ValidationError as e:
           print(f"Error uploading resume: {e}")
           context['upload_error'] = "Failed to upload resume. Please try again."
-    
+      else:
+          if not created:
+              print("Old resume file overwritten.")
+
     # Job Search
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('location')
