@@ -73,7 +73,7 @@ def home(request):
     job_location = request.POST.get('location')
     if job_title and job_location:
       # Send the scraping task to Celery
-      task = run_scraper.delay(job_title, job_location)
+      task = run_scraper.delay(job_title, job_location, request.user.id)
 
       # Set a flag to indicate a job search was initiated
       job_searched = True

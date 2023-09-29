@@ -88,6 +88,7 @@ $ redis-server
 
 $ celery -A cover_me worker --loglevel=info
   ^ seperate terminal (starts the celery worker)
+  if making a change to task, must restart the worker
 ```
 
 ```,
