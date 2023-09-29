@@ -59,14 +59,14 @@ def home(request):
       # Update the resume file with the new one
       existing_resume.resume_file = resume_form.cleaned_data['resume_file']
       try:
-          existing_resume.save()
-          print("Resume successfully uploaded.")
+        existing_resume.save()
+        print("Resume successfully uploaded.")
       except ValidationError as e:
-          print(f"Error uploading resume: {e}")
-          context['upload_error'] = "Failed to upload resume. Please try again."
+        print(f"Error uploading resume: {e}")
+        context['upload_error'] = "Failed to upload resume. Please try again."
       else:
-          if not created:
-              print("Old resume file overwritten.")
+        if not created:
+          print("Old resume file overwritten.")
 
     # Job Search
     job_title = request.POST.get('job_title')

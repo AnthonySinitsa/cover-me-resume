@@ -40,9 +40,9 @@ DONE: Don't have an Upload Resume section in the nav, just put the resume upload
 
 DONE: error with generating a cover letter
 
-## TODO
+DONE: multiple resumes can now be added, change back to only have one resume
 
-multiple resumes can now be added, change back to only have one resume
+## TODO
 
 add an about page
 
