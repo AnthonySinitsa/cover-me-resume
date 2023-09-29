@@ -44,9 +44,9 @@ DONE: multiple resumes can now be added, change back to only have one resume
 
 ## TODO
 
-add an about page
-
 make sure job search is specific to each user
+
+add an about page
 
 add a bug tracker
 
@@ -88,6 +88,7 @@ $ redis-server
 
 $ celery -A cover_me worker --loglevel=info
   ^ seperate terminal (starts the celery worker)
+  if making a change to task, must restart the worker
 ```
 
 ```,
