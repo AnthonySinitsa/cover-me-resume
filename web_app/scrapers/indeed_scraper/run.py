@@ -31,6 +31,10 @@ output.mkdir(parents=True, exist_ok=True)
 
 @sync_to_async
 def save_job_to_db(user, job, location):
+  if not job['jobTitle'] or not job['companyName'] or not job['description']:
+    print(f"Skipped a job because of missing data: {job}")
+    return  # This will exit the function early if the condition is met
+
   Job.objects.create(
     user=user,
     title=job['jobTitle'],
@@ -38,7 +42,7 @@ def save_job_to_db(user, job, location):
     location=location,
     description=job['description'],
     post_date=timezone.now(),
-    company_overview_link=job['companyOverviewLink']
+    company_overview_link=job.get('companyOverviewLink', ''),
   )
 
 @sync_to_async
@@ -54,16 +58,16 @@ async def run(job_specification, location, user_id):
   job_keys = [job['jobkey'] for job in result_search]
   result_jobs = await indeed.scrape_jobs(job_keys)
 
-  # try:
-  #   user = await sync_to_async(User.objects.get)(id=user_id)
-  # except ObjectDoesNotExist:
-  #   print(f"User with id {user_id} does not exist.")
-  #   return
+  try:
+    user = await sync_to_async(User.objects.get)(id=user_id)
+  except ObjectDoesNotExist:
+    print(f"User with id {user_id} does not exist.")
+    return
 
-  # for job in result_jobs:
-  #   await save_job_to_db(user, job, location)
+  for job in result_jobs:
+    await save_job_to_db(user, job, location)
 
-  # print('Job data saved to database')
+  print('Job data saved to database')
 
   print('Scraping completed successfully without saving to database.')
 
