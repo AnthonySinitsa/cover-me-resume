@@ -42,9 +42,13 @@ DONE: error with generating a cover letter
 
 DONE: multiple resumes can now be added, change back to only have one resume
 
+DONE: make sure job search is specific to each user
+
 ## TODO
 
-make sure job search is specific to each user
+Make sure company overview link works
+
+fix generate cover letter button, still uses the json file
 
 the user input isn't being concatinated with a '+' character
 
