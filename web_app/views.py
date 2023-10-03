@@ -13,7 +13,7 @@ from .forms import UserRegisterForm, ResumeUploadForm, EditCoverLetterForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
-from .models import Resume, CoverLetter
+from .models import Resume, CoverLetter, Job
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from .utils.pdf_utils import extract_text_from_pdf
@@ -98,24 +98,18 @@ def profile(request):
 
 def job_results(request, task_id=None):
   if task_id:
-    # Step 1: Reading the JSON File
-    with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
-      job_data = json.load(file)
-
-    # Step 2: Extracting the Relevant Data
-    jobs_list = []
-    for job in job_data:
-      job_info = {
-        "description": job["description"],
-        "companyName": job["companyName"],
-        "companyOverviewLink": job["companyOverviewLink"]
-      }
-      jobs_list.append(job_info)
+    # Step 1: Fetching job data from the database for the current user
+    jobs = Job.objects.filter(user=request.user).values(
+      'title', 'company', 'location', 'description', 
+      'post_date', 'company_overview_link'
+    )
     
-    # Step 3: Passing the Data to the Template
+    # Convert the QuerySet to a list so it can be easily converted to JSON if needed
+    jobs_list = list(jobs)
+
+    # Step 2: Pass the data to the template
     return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
   return render(request, 'error_page.html', {'message': 'No task ID provided.'})
-
 
 
 def get_user_resume_as_text(resume_file_path):

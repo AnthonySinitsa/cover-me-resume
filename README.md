@@ -46,6 +46,8 @@ DONE: multiple resumes can now be added, change back to only have one resume
 
 make sure job search is specific to each user
 
+the user input isn't being concatinated with a '+' character
+
 add an about page
 
 add a bug tracker
