@@ -58,18 +58,17 @@ async def run(job_specification, location, user_id):
   job_keys = [job['jobkey'] for job in result_search]
   result_jobs = await indeed.scrape_jobs(job_keys)
 
-  # try:
-  #   user = await sync_to_async(User.objects.get)(id=user_id)
-  # except ObjectDoesNotExist:
-  #   print(f"User with id {user_id} does not exist.")
-  #   return
+  try:
+    user = await sync_to_async(User.objects.get)(id=user_id)
+  except ObjectDoesNotExist:
+    print(f"User with id {user_id} does not exist.")
+    return
 
-  # for job in result_jobs:
-  #   await save_job_to_db(user, job, location)
+  for job in result_jobs:
+    await save_job_to_db(user, job, location)
 
   print('Job data saved to database')
 
-  print('Scraping completed successfully without saving to database.')
 
 def parse_arguments():
   parser = argparse.ArgumentParser(description="Indeed.com Job Scraper")

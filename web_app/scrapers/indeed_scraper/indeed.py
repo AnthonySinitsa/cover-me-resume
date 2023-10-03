@@ -76,6 +76,11 @@ def parse_job_page(result: ScrapeApiResponse):
   """parse job data from job listing page"""
   
   data = re.findall(r"_initialData=(\{.+?\});", result.content)
+
+  if not data:
+    print('No job data found')
+    return None
+  
   data = json.loads(data[0])
   data = data["jobInfoWrapperModel"]["jobInfoModel"]
   return {

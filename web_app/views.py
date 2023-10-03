@@ -95,25 +95,32 @@ def profile(request):
   resumes = [resume for resume in resumes if resume.resume_file]
   return render(request, 'profile.html', {'resumes': resumes, 'cover_letters': cover_letters})
 
-
+@login_required
 def job_results(request, task_id=None):
   if task_id:
-    # Step 1: Fetching job data from the database for the current user
-    jobs = Job.objects.filter(user=request.user).values(
-      'title', 'company', 'location', 'description', 
-      'post_date', 'company_overview_link'
-    )
-    
-    # Convert the QuerySet to a list so it can be easily converted to JSON if needed
-    jobs_list = list(jobs)
+    # Get the logged-in user's ID
+    user_id = request.user.id
 
-    # Step 2: Pass the data to the template
+    # Step 1: Query the database to get the job data associated with the user
+    jobs = Job.objects.filter(user_id=user_id)
+
+    # Step 2: Extracting the Relevant Data
+    jobs_list = []
+    for job in jobs:
+      job_info = {
+        "title": job.title,
+        "company": job.company,
+        "location": job.location,
+        "description": job.description,
+        "post_date": job.post_date,
+        "company_overview_link": job.company_overview_link
+      }
+      jobs_list.append(job_info)
+
+    # Step 3: Passing the Data to the Template
     return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
+
   return render(request, 'error_page.html', {'message': 'No task ID provided.'})
-
-
-def get_user_resume_as_text(resume_file_path):
-  return extract_text_from_pdf(resume_file_path)
 
 
 @login_required

@@ -38,7 +38,7 @@ class Job(models.Model):
     location = models.CharField(max_length=255)
     description = models.TextField()
     post_date = models.DateTimeField(default=timezone.now)
-    company_overview_link = models.URLField()
+    company_overview_link = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return self.title
