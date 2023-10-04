@@ -125,20 +125,23 @@ def job_results(request, task_id=None):
 
 @login_required
 def generate_cover_letter(request, job_index):
-  # print('generating cover letter for job index:', job_index)
   # Ensure the user has uploaded a resume before proceeding
   user_resume = Resume.objects.filter(user=request.user).first()
   if user_resume is None or not user_resume.resume_file:
     messages.error(request, "You need to upload a resume first.")
     return redirect('home')
   
-  # Load the jobs from jobs.json
-  with open('web_app/scrapers/indeed_scraper/results/jobs.json', 'r') as file:
-    jobs = json.load(file)
+  # Get the jobs from the database associated with the user
+  jobs = list(Job.objects.filter(user=request.user))
+  
+  # Ensure the job_index is valid
+  if job_index < 0 or job_index >= len(jobs):
+    messages.error(request, "Invalid job selection.")
+    return redirect('home')
   
   # Get the selected job using the job_index
   selected_job = jobs[job_index]
-  job_description = selected_job["description"]
+  job_description = selected_job.description
 
   # Fetch the user's resume and extract its text.
   try:
