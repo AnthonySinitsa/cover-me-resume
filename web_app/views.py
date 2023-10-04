@@ -102,7 +102,7 @@ def job_results(request, task_id=None):
     user_id = request.user.id
 
     # Step 1: Query the database to get the job data associated with the user
-    jobs = Job.objects.filter(user_id=user_id)
+    jobs = Job.objects.filter(user_id=user_id).order_by('-post_date')[:30]
 
     # Step 2: Extracting the Relevant Data
     jobs_list = []
