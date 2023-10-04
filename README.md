@@ -44,11 +44,11 @@ DONE: multiple resumes can now be added, change back to only have one resume
 
 DONE: make sure job search is specific to each user
 
+DONE: Make sure company overview link works
+
 ## TODO
 
-Make sure company overview link works
-
-fix generate cover letter button, still uses the json file
+fix generate cover letter button
 
 the user input isn't being concatinated with a '+' character
 
