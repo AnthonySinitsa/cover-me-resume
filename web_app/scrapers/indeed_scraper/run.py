@@ -30,35 +30,33 @@ import web_app.scrapers.indeed_scraper.indeed as indeed
 output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
 
+
+@sync_to_async
+def clear_existing_jobs(user):
+  Job.objects.all().delete()
+  print(f'Deleted all existing jobs for user {user.id}')
+
+
 @sync_to_async
 def save_job_to_db(user, job, location):
   print(f'Reveived job data: {job}')
-  
-  # step 1: delete all existing jobs associated with the user
-  with transaction.atomic():
-    Job.objects.all().delete()
 
-    print(f'Deleted all existing jobs for user {user.id}')
+  Job.objects.create(
+    user=user,
+    title=job['jobTitle'],
+    company=job['companyName'],
+    location=location,
+    description=job['description'],
+    post_date=timezone.now(),
+    company_overview_link=job.get('companyOverviewLink', ''),
+  )
+  print(f'Saved job to database: {job}')
 
-    # step 2: save new jobs to the database
-    if not job['jobTitle'] or not job['companyName'] or not job['description']:
-      print(f"Skipped a job because of missing data: {job}")
-      return  # This will exit the function early if the condition is met
-    else:
-      Job.objects.create(
-        user=user,
-        title=job['jobTitle'],
-        company=job['companyName'],
-        location=location,
-        description=job['description'],
-        post_date=timezone.now(),
-        company_overview_link=job.get('companyOverviewLink', ''),
-      )
-      print(f'Saved job to database: {job}')
 
 @sync_to_async
 def get_user_by_id(user_id):
   return User.objects.get(id=user_id)
+
 
 async def run(job_specification, location, user_id):
   # enable scrapfly cache for basic use
@@ -75,10 +73,21 @@ async def run(job_specification, location, user_id):
     print(f"User with id {user_id} does not exist.")
     return
 
+  # Clear existing jobs before saving new ones
+  await clear_existing_jobs(user)
+
   for job in result_jobs:
+    # Adding the skipping logic here
+    if not job['jobTitle'] or not job['companyName'] or not job['description'] or not job.get('companyOverviewLink'):
+      print(f"Skipped a job because of missing data: {job}")
+      continue  # Skip this iteration and proceed to the next job
+
+    # If job data is complete, save it to the database
     await save_job_to_db(user, job, location)
 
   print('Job data saved to database')
+
+
 
 
 def parse_arguments():
