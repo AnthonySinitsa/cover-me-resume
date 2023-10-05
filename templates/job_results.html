@@ -8,11 +8,10 @@
 <ul>
     {% for index, job in jobs|enumerate %}
         <li>
-            <strong>Retrieved At:</strong> {{ job.post_date|date:"F d, Y" }}<br>
-            <strong>Company:</strong> {{ job.company }}<br>
             <strong>Title:</strong> {{ job.title }}<br>
-            <strong>Description:</strong> {{ job.description|safe }}<br>
+            <strong>Company:</strong> {{ job.company }}<br>
             <strong>Location:</strong> {{ job.location }}<br>
+            <strong>Description:</strong> {{ job.description|safe }}<br>
             <a href="{{ job.company_overview_link }}" target="_blank">Company Overview</a>
             <a href="{% url 'generate_cover_letter' index %}">Generate Cover Letter</a>
         </li>

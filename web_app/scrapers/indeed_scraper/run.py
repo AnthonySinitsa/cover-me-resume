@@ -10,6 +10,7 @@ import os
 import sys
 import json
 import django
+import logging
 import asyncio
 import argparse
 from pathlib import Path
@@ -30,36 +31,38 @@ import web_app.scrapers.indeed_scraper.indeed as indeed
 output = Path(__file__).parent / "results"
 output.mkdir(parents=True, exist_ok=True)
 
+
+@sync_to_async
+def clear_existing_jobs(user):
+  Job.objects.filter(user=user).delete()
+  logging.info(f'Deleted all existing jobs for user {user.id}')
+
+
 @sync_to_async
 def save_job_to_db(user, job, location):
-  print(f'Reveived job data: {job}')
-  
-  # step 1: delete all existing jobs associated with the user
-  with transaction.atomic():
-    Job.objects.all().delete()
+  try:
+    logging.info(f'Received job data: {job["companyName"]}')
 
-    print(f'Deleted all existing jobs for user {user.id}')
+    Job.objects.create(
+      user=user,
+      title=job['jobTitle'],
+      company=job['companyName'],
+      location=location,
+      description=job['description'],
+      post_date=timezone.now(),
+      company_overview_link=job.get('companyOverviewLink', ''),
+    )
+    logging.info(f'Saved job to database: {job["companyName"]}')
+    
+  except Exception as e:
+    logging.error(f'Error saving job {job["companyName"]} to database for user: {user.id}: {e}')
 
-    # step 2: save new jobs to the database
-    if not job['jobTitle'] or not job['companyName'] or not job['description']:
-      print(f"Skipped a job because of missing data: {job}")
-      return  # This will exit the function early if the condition is met
-    else:
-      Job.objects.create(
-        user=user,
-        title=job['jobTitle'],
-        company=job['companyName'],
-        location=location,
-        description=job['description'],
-        post_date=timezone.now(),
-        company_overview_link=job.get('companyOverviewLink', ''),
-      )
-      print(f'Saved job to database: {job}')
 
 @sync_to_async
 def get_user_by_id(user_id):
   return User.objects.get(id=user_id)
 
+@transaction.atomic
 async def run(job_specification, location, user_id):
   # enable scrapfly cache for basic use
   BASE_CONFIG["cache"] = True
@@ -69,16 +72,37 @@ async def run(job_specification, location, user_id):
   job_keys = [job['jobkey'] for job in result_search]
   result_jobs = await indeed.scrape_jobs(job_keys)
 
+  logging.info(f'Number of jobs retrieved: {len(result_jobs)}')
+  
   try:
-    user = await sync_to_async(User.objects.get)(id=user_id)
-  except ObjectDoesNotExist:
-    print(f"User with id {user_id} does not exist.")
+    user = await get_user_by_id(user_id)
+  except ObjectDoesNotExist as e:
+    logging.error(f"User with id {user_id} does not exist: {e}")
+    return
+  except Exception as e:
+    logging.error(f"An error occurred while getting the user: {e}")
     return
 
+  # Clear existing jobs before saving new ones
+  await clear_existing_jobs(user)
+
   for job in result_jobs:
+    # adding safety check to handle NoneType jobs
+    if job is None:
+      logging.warning('Skipped job because job data is None')
+      continue
+    
+    # Adding the skipping logic here
+    if not job['jobTitle'] or not job['companyName'] or not job['description'] or not job.get('companyOverviewLink'):
+      logging.warning(f"Skipped a job because of missing data: {job['companyName']}")
+      continue  # Skip this iteration and proceed to the next job
+
+    # If job data is complete, save it to the database
     await save_job_to_db(user, job, location)
 
-  print('Job data saved to database')
+  logging.info('Job data saved to database')
+
+
 
 
 def parse_arguments():
@@ -89,6 +113,8 @@ def parse_arguments():
   return parser.parse_args()
 
 if __name__ == "__main__":
+  logging.basicConfig(level=logging.INFO,
+                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
   args = parse_arguments()
   job_description = args.job_description
   location = args.location
