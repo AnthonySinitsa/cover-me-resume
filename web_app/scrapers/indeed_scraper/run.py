@@ -39,7 +39,7 @@ def clear_existing_jobs(user):
 
 @sync_to_async
 def save_job_to_db(user, job, location):
-  print(f'Reveived job data: {job}')
+  print(f'Reveived job data: {job["companyName"]}')
 
   Job.objects.create(
     user=user,
@@ -50,7 +50,7 @@ def save_job_to_db(user, job, location):
     post_date=timezone.now(),
     company_overview_link=job.get('companyOverviewLink', ''),
   )
-  print(f'Saved job to database: {job}')
+  print(f'Saved job to database: {job["companyName"]}')
 
 
 @sync_to_async
@@ -77,9 +77,14 @@ async def run(job_specification, location, user_id):
   await clear_existing_jobs(user)
 
   for job in result_jobs:
+    # adding safety check to handle NoneType jobs
+    if job is None:
+      print('Skipped job because job data is None')
+      continue
+    
     # Adding the skipping logic here
     if not job['jobTitle'] or not job['companyName'] or not job['description'] or not job.get('companyOverviewLink'):
-      print(f"Skipped a job because of missing data: {job}")
+      print(f"Skipped a job because of missing data: {job['companyName']}")
       continue  # Skip this iteration and proceed to the next job
 
     # If job data is complete, save it to the database
