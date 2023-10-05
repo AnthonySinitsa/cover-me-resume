@@ -34,7 +34,7 @@ output.mkdir(parents=True, exist_ok=True)
 
 @sync_to_async
 def clear_existing_jobs(user):
-  Job.objects.all(user=user).delete()
+  Job.objects.filter(user=user).delete()
   logging.info(f'Deleted all existing jobs for user {user.id}')
 
 
@@ -62,7 +62,7 @@ def save_job_to_db(user, job, location):
 def get_user_by_id(user_id):
   return User.objects.get(id=user_id)
 
-
+@transaction.atomic
 async def run(job_specification, location, user_id):
   # enable scrapfly cache for basic use
   BASE_CONFIG["cache"] = True
@@ -72,6 +72,8 @@ async def run(job_specification, location, user_id):
   job_keys = [job['jobkey'] for job in result_search]
   result_jobs = await indeed.scrape_jobs(job_keys)
 
+  logging.info(f'Number of jobs retrieved: {len(result_jobs)}')
+  
   try:
     user = await get_user_by_id(user_id)
   except ObjectDoesNotExist as e:

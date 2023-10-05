@@ -2,6 +2,7 @@ import os
 import json
 import openai
 import requests
+import logging
 import pdfkit
 import asyncio
 from io import BytesIO
@@ -103,7 +104,9 @@ def job_results(request, task_id=None):
 
     # Step 1: Query the database to get the job data associated with the user
     jobs = Job.objects.filter(user_id=user_id).order_by('-post_date')[:30]
-
+    logging.info(f'Job results from views.py: {len(jobs)}')
+    
+    
     # Step 2: Extracting the Relevant Data
     jobs_list = []
     for job in jobs:
