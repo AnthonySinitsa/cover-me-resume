@@ -20,6 +20,7 @@ from web_app.models import Job
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from django.db import transaction
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
@@ -31,19 +32,29 @@ output.mkdir(parents=True, exist_ok=True)
 
 @sync_to_async
 def save_job_to_db(user, job, location):
-  if not job['jobTitle'] or not job['companyName'] or not job['description']:
-    print(f"Skipped a job because of missing data: {job}")
-    return  # This will exit the function early if the condition is met
+  print(f'Reveived job data: {job}')
+  
+  # step 1: delete all existing jobs associated with the user
+  with transaction.atomic():
+    Job.objects.all().delete()
 
-  Job.objects.create(
-    user=user,
-    title=job['jobTitle'],
-    company=job['companyName'],
-    location=location,
-    description=job['description'],
-    post_date=timezone.now(),
-    company_overview_link=job.get('companyOverviewLink', ''),
-  )
+    print(f'Deleted all existing jobs for user {user.id}')
+
+    # step 2: save new jobs to the database
+    if not job['jobTitle'] or not job['companyName'] or not job['description']:
+      print(f"Skipped a job because of missing data: {job}")
+      return  # This will exit the function early if the condition is met
+    else:
+      Job.objects.create(
+        user=user,
+        title=job['jobTitle'],
+        company=job['companyName'],
+        location=location,
+        description=job['description'],
+        post_date=timezone.now(),
+        company_overview_link=job.get('companyOverviewLink', ''),
+      )
+      print(f'Saved job to database: {job}')
 
 @sync_to_async
 def get_user_by_id(user_id):
