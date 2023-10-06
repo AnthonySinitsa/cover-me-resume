@@ -1,6 +1,5 @@
 # Cover-My-Resume
 
-
 ## TODO
 
 add an about page
