@@ -13,6 +13,8 @@ import django
 import logging
 import asyncio
 import argparse
+import psycopg2
+import traceback
 from pathlib import Path
 from asgiref.sync import sync_to_async
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cover_me.settings')
@@ -58,9 +60,20 @@ def save_job_to_db(user, job, location):
     logging.error(f'Error saving job {job["companyName"]} to database for user: {user.id}: {e}')
 
 
+
 @sync_to_async
 def get_user_by_id(user_id):
-  return User.objects.get(id=user_id)
+  try:
+    return User.objects.get(id=user_id)
+  except ObjectDoesNotExist as e:
+    logging.error(f"User with id {user_id} does not exist: {e}")
+  except psycopg2.OperationalError as e:
+    logging.error(f"Operational error while getting the user: {e}")
+    logging.error(traceback.format_exc())  # Log the full stack trace for more details
+  except Exception as e:
+    logging.error(f"An error occurred while getting the user: {e}")
+    logging.error(traceback.format_exc())  # Log the full stack trace for more details
+
 
 @transaction.atomic
 async def run(job_specification, location, user_id):
