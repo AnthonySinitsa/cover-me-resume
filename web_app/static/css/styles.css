@@ -16,11 +16,22 @@ body {
 
 /* Style for the navigation bar */
 nav {
-  background-color: #333;
-  color: white;
-  padding: 5px;
+  background-color: #333 !important;
+  color: white !important;
+  padding: 5px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100%; /* Ensure it takes the full width */
+  position: relative; /* Ensure it is positioned relative to its parent */
+  top: 0; /* Ensure it is at the top */
+  z-index: 1000; /* Put it above other elements */
+}
+
+/* New styles for navigation item containers */
+.nav-left, .nav-right {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
 }
 
 /* Style for navigation links */
@@ -120,4 +131,51 @@ nav a:hover {
   color: #888;
   font-size: 0.9em;
   margin-top: 20px;
+}
+
+body .modal-dialog {
+  max-width: 800px;
+  width: 80%;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 10px;
+  border: 1px solid #888;
+  width: 100%; /* Update this value to adjust the width of the modal */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.apply-button {
+  display: inline-block;
+  padding: 10px 20px;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.apply-button:hover {
+  background-color: rgb(44, 41, 41);
+  color: white;
 }

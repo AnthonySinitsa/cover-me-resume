@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="content-container">
-<h1>Scrapped Results:</h1>
+    <h1>Scrapped Results:</h1>
     <ul>
         {% for index, job in jobs|enumerate %}
             <li>
@@ -24,9 +24,9 @@
 
                         <!-- Modal Body -->
                         <div class="modal-body">
+                            <a href="{{ job.company_overview_link }}" target="_blank" class="apply-button">Apply Here</a><br>
                             <strong>Location:</strong> {{ job.location }}<br>
                             <strong>Description:</strong> {{ job.description|safe }}<br>
-                            <a href="{{ job.company_overview_link }}" target="_blank">Company Overview</a>
                         </div>
 
                         <!-- Modal Footer -->
