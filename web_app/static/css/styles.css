@@ -68,3 +68,40 @@ nav a:hover {
 .btn-upload:hover, .btn-search:hover {
   background-color: #555;
 }
+
+#drop-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#drop-area.highlight {
+  border-color: blue;
+}
+
+#id_resume {
+  visibility: hidden;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+}
+
+/* New styles for the custom file upload button */
+.custom-file-upload {
+  position: relative;
+}
+
+#customFileUploadBtn {
+  /* Style as needed */
+  cursor: pointer;
+  padding: 10px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+#selectedFileName {
+  margin-left: 10px;
+}
