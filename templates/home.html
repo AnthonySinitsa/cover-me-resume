@@ -7,7 +7,7 @@
     <p>This site scrapes jobs for you and uses your resume to generate a cover letter specialized for you!</p>
 
     <div class="form-container">
-        <h2 style="margin-top: 5px;">Upload Resume</h2>
+        <h2 style="margin-top: 5px; margin-bottom: 10px;">Upload Resume</h2>
         <form method="post" enctype="multipart/form-data" action="{% url 'home' %}" class="upload-form" id="uploadForm">
             {% csrf_token %}
             {{ resume_form.as_p }}

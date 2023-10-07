@@ -1,11 +1,14 @@
-<!-- registration/login.html -->
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+<div class="content-container">
+    <div class="form-container">
+        <h2>Login</h2>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-upload">Login</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
