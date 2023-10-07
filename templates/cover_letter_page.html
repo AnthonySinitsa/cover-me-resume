@@ -1,16 +1,28 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<div class="content-container">
     <h2>Your Generated Cover Letter</h2>
 
-    <form action="{% url 'download_cover_letter' %}" method="post">
-        {% csrf_token %}
-        
-        <textarea name="cover_letter_text" id="coverLetterTextArea" rows="20" cols="100">
-            {{ cover_letter }}
-        </textarea>
-        <br>
-        <input type="text" name="cover_letter_filename" value="Cover_Letter" />
-        <input type="submit" value="Download as PDF">
-    </form>
+    <div class="form-container">
+        <form action="{% url 'download_cover_letter' %}" method="post" class="cover-letter-form">
+            {% csrf_token %}
+            
+            <textarea name="cover_letter_text" id="coverLetterTextArea">
+                {{ cover_letter }}
+            </textarea>
+            
+            <div class="download-section">
+                <input type="text" name="cover_letter_filename" value="Cover_Letter" class="filename-input"/>
+                <button type="submit" class="btn-download">Download as PDF</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+    <script src="{% static 'js/coverLetter.js' %}"></script>
+{% endblock %}
+
 {% endblock %}

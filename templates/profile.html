@@ -1,69 +1,53 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-
+{% load static %}
 
 {% block content %}
-<h2>Your Uploaded Resumes:</h2>
-<ul>
-    {% for resume in resumes %}
-        <li>
-            <a href="{{ resume.resume_file.url }}">Your Resume</a>
-            <!-- Link to download or view the resume -->
-        </li>
-    {% endfor %}
-</ul>
+<div class="content-container">
 
-<h2>Your Generated Cover Letters:</h2>
-<ul>
-    {% for letter in cover_letters %}
-        <li>
-            {{ letter.pdf_file.name|filename }} - {{ letter.created_at }} 
-            <a href="{% url 'download_cover_letter_by_id' letter.id %}">Download</a> | 
-            <a href="{% url 'edit_cover_letter' letter.id %}">Edit</a> |
-            <a href="{% url 'delete_cover_letter' letter.id %}">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+    <div class="section">
+        <ul class="list">
+            {% for resume in resumes %}
+                <li>
+                    <a href="{{ resume.resume_file.url }}" class="item-link">Your Resume</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<!-- Delete Account Button -->
-<button id="deleteAccountBtn">Delete Account</button>
+    <div class="section">
+        <h2>Your Generated Cover Letters:</h2>
+        <ul class="list">
+            {% for letter in cover_letters %}
+                <li>
+                    <div class="letter-container">
+                        {{ letter.pdf_file.name|filename }} - {{ letter.created_at }} 
+                        <div class="action-button">
+                            <a href="{% url 'download_cover_letter_by_id' letter.id %}" class="item-link">Download</a> | 
+                            <a href="{% url 'edit_cover_letter' letter.id %}" class="item-link">Edit</a> |
+                            <a href="{% url 'delete_cover_letter' letter.id %}" class="item-link">Delete</a>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<!-- Modal for Account Deletion Confirmation -->
-<div id="deleteAccountModal" style="display:none;">
-    <p>Are you sure you want to delete your account?</p>
-    <button id="confirmDeleteBtn">Yes</button>
-    <button id="cancelDeleteBtn">No</button>
+    <div class="section">
+        <button id="deleteAccountBtn" class="btn-delete">Delete Account</button>
+    </div>
+
 </div>
 
-<script>
-document.getElementById("deleteAccountBtn").addEventListener("click", function() {
-    // Show the modal when the delete button is clicked
-    document.getElementById("deleteAccountModal").style.display = "block";
-});
+<!-- Modal for Account Deletion Confirmation -->
+<div id="deleteAccountModal" class="modal">
+    <p>Are you sure you want to delete your account?</p>
+    <button id="confirmDeleteBtn" class="btn-confirm">Yes</button>
+    <button id="cancelDeleteBtn" class="btn-cancel">No</button>
+</div>
 
-document.getElementById("confirmDeleteBtn").addEventListener("click", function() {
-    // Send a POST request to delete the account
-    fetch('/delete_account/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Redirect to home or login page after successful deletion
-            window.location.href = '/';
-        } else {
-            alert("Error deleting account.");
-        }
-    });
-});
-
-document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
-    // Hide the modal if user cancels
-    document.getElementById("deleteAccountModal").style.display = "none";
-});
-</script>
-
+{% block extra_js %}
+    <script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
 
 {% endblock %}
