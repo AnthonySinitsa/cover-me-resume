@@ -1,31 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to Cover Me!</h1>
-<p>Some introductory text or content for your homepage.</p>
+<div class="content-container">
+    <h1>Welcome to Cover Me!</h1>
+    <p>This site scrapes jobs for you and uses your resume to generate a cover letter specialized for you!</p>
 
-<h2>Upload Resume</h2>
-<form method="post" enctype="multipart/form-data" action="{% url 'home' %}">
-    {% csrf_token %}
-    {{ resume_form.as_p }}
-    <button type="submit">Upload</button>
-</form>
+    <div class="form-container">
+        <h2>Upload Resume</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'home' %}" class="upload-form">
+            {% csrf_token %}
+            {{ resume_form.as_p }}
+            <button type="submit" class="btn-upload">Upload</button>
+        </form>
+    </div>
 
-<h2>Start Job Scraper</h2>
-<form method="post" action="{% url 'home' %}" id="JobSearchForm">
-    {% csrf_token %}
-    <input type="hidden" name="job_search" value="1">  <!-- Hidden input to distinguish form submissions -->
-    <div>
-        <label for="job_title">Job Title:</label>
-        <input type="text" name="job_title" required>
+    <div class="form-container">
+        <h2>Start Job Scraper</h2>
+        <form method="post" action="{% url 'home' %}" id="JobSearchForm" class="search-form">
+            {% csrf_token %}
+            <input type="hidden" name="job_search" value="1">  <!-- Hidden input to distinguish form submissions -->
+            <div class="form-group">
+                <label for="job_title">Job Title:</label>
+                <input type="text" name="job_title" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" name="location" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn-search">Start Scraping</button>
+            </div>
+        </form>
     </div>
-    <div>
-        <label for="location">Location:</label>
-        <input type="text" name="location" required>
-    </div>
-    <div>
-        <button type="submit">Start Scraping</button>
-    </div>
-</form>
-
+</div>
 {% endblock %}
