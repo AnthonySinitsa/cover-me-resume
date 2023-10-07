@@ -315,3 +315,42 @@ body .modal-dialog {
   align-items: center;
   width: 100%;
 }
+
+.edit-container {
+  max-width: 600px;
+  margin: auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.edit-form .form-group {
+  margin-bottom: 20px;
+}
+
+.btn-edit {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #555;
+}
+
+label[for="id_content"] {
+  display: none;
+}
+
+
+textarea#id_content {
+  width: 100%; /* Adjust this to your liking */
+  max-width: 800px; /* Prevents the textarea from becoming too wide on large screens */
+  margin: 0 auto; /* Centers the textarea */
+  display: block; /* Makes the textarea behave like a block element */
+}
