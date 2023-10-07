@@ -1,40 +1,44 @@
+{% extends 'base.html' %}
+
 {% load custom_filters %}
-<head>
-    <nav>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'profile' %}">Profile</a>
-    </nav>
-</head>
-<ul>
-    {% for index, job in jobs|enumerate %}
-        <li>
-            <strong>Title:</strong> {{ job.title }}<br>
-            <strong>Company:</strong> {{ job.company }}<br>
-            <strong>Location:</strong> {{ job.location }}<br>
-            <strong>Description:</strong> {{ job.description|safe }}<br>
-            <a href="{{ job.company_overview_link }}" target="_blank">Company Overview</a>
-            <a href="{% url 'generate_cover_letter' index %}">Generate Cover Letter</a>
-        </li>
-    {% endfor %}
-</ul>
 
-<script>
-    function checkTaskStatus(taskId) {
-        fetch(`/task_status/${taskId}/`).then(response => response.json()).then(data => {
-            if (data.status === 'SUCCESS') {
-                // Display the results
-                console.log(data.result);
-                // TODO: Process and display data.result as needed
-            } else if (data.status === 'FAILURE') {
-                console.error('Task failed');
-                // TODO: Handle task failure (e.g., display an error message)
-            } else {
-                // Task is still running, check again in a few seconds
-                setTimeout(() => checkTaskStatus(taskId), 5000);
-            }
-        });
-    }
+{% block content %}
+<div class="content-container">
+<h1>Scrapped Results:</h1>
+    <ul>
+        {% for index, job in jobs|enumerate %}
+            <li>
+                <a href="#" data-toggle="modal" data-target="#jobModal{{index}}">{{ job.title }} at {{ job.company }}</a>
+            </li>
 
-    // Start polling
-    checkTaskStatus('{{ task_id }}');  // Pass the task ID from the context to the JavaScript function
-</script>
+            <!-- The Modal -->
+            <div class="modal" id="jobModal{{index}}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">{{ job.title }} at {{ job.company }}</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <strong>Location:</strong> {{ job.location }}<br>
+                            <strong>Description:</strong> {{ job.description|safe }}<br>
+                            <a href="{{ job.company_overview_link }}" target="_blank">Company Overview</a>
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <a href="{% url 'generate_cover_letter' index %}" class="btn btn-primary">Generate Cover Letter</a>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

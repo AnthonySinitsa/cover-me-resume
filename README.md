@@ -2,6 +2,8 @@
 
 ## TODO
 
+add a results button to the nav
+
 add an about page
 
 add a bug tracker

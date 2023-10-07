@@ -105,3 +105,19 @@ nav a:hover {
 #selectedFileName {
   margin-left: 10px;
 }
+
+.loading-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.loader img {
+  width: 200px; /* Adjust the size as needed */
+  height: auto;
+}
+
+.note {
+  color: #888;
+  font-size: 0.9em;
+  margin-top: 20px;
+}
