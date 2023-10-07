@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h2>Loading...</h2>
-<p>Please wait while we scrape job listings for you.</p>
-<div class="loader">
-    <!-- You can place your loader animation or any other visual here -->
-    <!-- For instance, a simple text-based loader -->
-    <p>Loading...</p>
+<div class="loading-container">
+    <h2>We're on it!</h2>
+    <p>We are currently scraping job listings tailored for you. This might take a few minutes, so please be patient.</p>
+    
+    <div class="loader">
+        <!-- Using an SVG spinner as the loader animation -->
+        <img src="{% static 'img/mater.gif' %}" alt="Loading...">
+    </div>
+
+    <p class="note">Note: Do not refresh or leave this page until the process is complete.</p>
 </div>
 
 {% block extra_js %}
@@ -31,6 +36,5 @@
     checkTaskStatus();
 </script>
 {% endblock %}
-
 
 {% endblock %}

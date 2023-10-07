@@ -1,31 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Welcome to Cover Me!</h1>
-<p>Some introductory text or content for your homepage.</p>
+<div class="content-container">
+    <h1>Welcome to Cover Me!</h1>
+    <p>This site scrapes jobs for you and uses your resume to generate a cover letter specialized for you!</p>
 
-<h2>Upload Resume</h2>
-<form method="post" enctype="multipart/form-data" action="{% url 'home' %}">
-    {% csrf_token %}
-    {{ resume_form.as_p }}
-    <button type="submit">Upload</button>
-</form>
+    <div class="form-container">
+        <h2 style="margin-top: 5px; margin-bottom: 10px;">Upload Resume</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'home' %}" class="upload-form" id="uploadForm">
+            {% csrf_token %}
+            {{ resume_form.as_p }}
+            <button type="submit" class="btn-upload">Upload</button>
+        </form>
+    </div>
 
-<h2>Start Job Scraper</h2>
-<form method="post" action="{% url 'home' %}" id="JobSearchForm">
-    {% csrf_token %}
-    <input type="hidden" name="job_search" value="1">  <!-- Hidden input to distinguish form submissions -->
-    <div>
-        <label for="job_title">Job Title:</label>
-        <input type="text" name="job_title" required>
+    <div class="form-container">
+        <h2 style="margin-top: 5px;">Start Job Scraper</h2>
+        <form method="post" action="{% url 'home' %}" id="JobSearchForm" class="upload-form">
+            {% csrf_token %}
+            <input type="hidden" name="job_search" value="1">  <!-- Hidden input to distinguish form submissions -->
+            <div>
+                <label for="job_title">Job Title:</label>
+                <input type="text" name="job_title" required>
+            </div>
+            <div>
+                <label for="location">Location:</label>
+                <input type="text" name="location" required>
+            </div>
+            <button type="submit" class="btn-upload" style="margin-top: 20px;">Start Scraping</button>
+        </form>
     </div>
-    <div>
-        <label for="location">Location:</label>
-        <input type="text" name="location" required>
-    </div>
-    <div>
-        <button type="submit">Start Scraping</button>
-    </div>
-</form>
+</div>
+
+{% block extra_js %}
+    <!-- <script src="{% static 'js/upload.js' %}"></script> -->
+{% endblock %}
 
 {% endblock %}

@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Changes</button>
-</form>
+<div class="edit-container">
+    <form method="post" enctype="multipart/form-data">
+        <h2>Edit Cover Letter</h2>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
 {% endblock %}
