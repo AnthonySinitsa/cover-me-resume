@@ -275,10 +275,10 @@ def check_task_status(request, task_id):
 @login_required
 def delete_account(request):
   if request.method == 'POST':
-    user = request.user
-    user.delete()
+    request.user.delete()
     logout(request)
-    return redirect('/')
+    return JsonResponse({'status': 'success'})
+  return JsonResponse({'status': 'error'}, status=400)
   
 
 @login_required
