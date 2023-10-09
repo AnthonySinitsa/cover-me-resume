@@ -72,9 +72,13 @@ def home(request):
     # Job Search
     job_title = request.POST.get('job_title')
     job_location = request.POST.get('location')
-    if job_title and job_location:
+    if job_title and job_location:      
       # Send the scraping task to Celery
       task = run_scraper.delay(job_title, job_location, request.user.id)
+
+      # Save task ID in the session
+      request.session['task_id'] = str(task.id)
+      request.session.save()
 
       # Set a flag to indicate a job search was initiated
       job_searched = True
@@ -99,6 +103,9 @@ def profile(request):
 @login_required
 def job_results(request, task_id=None):
   if task_id:
+    # Save task ID in user's session
+    request.session['job_results_uuid'] = task_id
+    
     # Get the logged-in user's ID
     user_id = request.user.id
 
@@ -123,6 +130,7 @@ def job_results(request, task_id=None):
     # Step 3: Passing the Data to the Template
     return render(request, 'job_results.html', {'jobs': jobs_list, 'task_id': task_id})
 
+  messages.error(request, 'No task ID provided.')
   return render(request, 'error_page.html', {'message': 'No task ID provided.'})
 
 
@@ -267,10 +275,10 @@ def check_task_status(request, task_id):
 @login_required
 def delete_account(request):
   if request.method == 'POST':
-    user = request.user
-    user.delete()
+    request.user.delete()
     logout(request)
-    return redirect('/')
+    return JsonResponse({'status': 'success'})
+  return JsonResponse({'status': 'error'}, status=400)
   
 
 @login_required

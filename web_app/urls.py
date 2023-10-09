@@ -12,4 +12,5 @@ urlpatterns = [
   path('task_status/<str:task_id>/', views.check_task_status, name='check_task_status'),
   path('delete_account/', views.delete_account, name='delete_account'),
   path('edit_cover_letter/<int:letter_id>/', views.edit_cover_letter, name='edit_cover_letter'),
+  path('job-results/<str:task_id>/', views.job_results, name='job_results'),
 ]
