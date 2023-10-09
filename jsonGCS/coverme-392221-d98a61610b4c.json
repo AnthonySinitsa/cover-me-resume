@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "coverme-392221",
+  "private_key_id": "d98a61610b4c2dc70aac459c11f14404cf29b3a8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDWJ5Cavv+ptps9\n8rM7/HYO8/K6izsX3SUW+gSAANGJvfZuRRTG9ZQBzH+fYpH9VWiXLEOKjUQp60fZ\nV2vdAQ2NvWCVhq8IciSGFEelG/4WzGzAkOwj0LiuxYPCbnJxDLKtQTS+9Fts5QQd\nUxF2ptP/0tZDJzVeX8NFmKexdHOaXJ3hzWoo+PCQGmZTepp4BYoeAwNvhkXrj6di\nbUbL3Rwp4sh/gXgglLADIcn4JyX7t3dsw8AOE+efF0bmtfkgMz0LG3bmHrynTVP+\nvpt9L2A9plPHuzALCTn+hiepV6GS6carjczMywAvZJWRxbOPxLX17Fj+jsYC/NBP\nlIJHxvZFAgMBAAECggEAAWTHhaJJkqasEvah4PmPISDISxt92nVneONOpTCcLHvO\nf0A21uahPHPCvtxK2+2y3Qz+MYgi0e0Eji8J9im8F1iMqNx0BieMAk1ee/4XJLnW\n2Vf4GXGRyh1h8qF6YC73eLYsbDO15psE8FXqjq2eQpNyLoSyTbds02afbMG3wODn\nX0SVVk70+h8anhB4N5jONQWUHyNGUZIOfVoD4taLEZIlEAZNDM1tL2Gm6dzgOdUl\n/KPDbaSqocx+Po+YQbjKzVUmss4YE01hUlJ+2l7u5o9B9ZFsiCcyZIrYEV0MDhYD\nppVriV3LAWkQIxFmfhwNOcoQU4No6ziChDaRl9/YcQKBgQD0K+zBAibutuT43B7z\nClhSiCnj3wLBDc41P2wyJjGcVp8uZ/BM0mmY3KU51k93YWqxIpxk4k91ln3IkQzR\nNjF7MxPTFXA/SiAoZySNZZQmzFPGbs8FJnhM6SemrUUg7wUWYlCUqcdOwmUIH4n7\n8wqVaUTolMtymrk5QqsQPqXEKQKBgQDgh2LZPECUQjN7xVYVOz5KmK2FLKMOtoPi\nvFx5RkZqcsxgEVizy+55Z2jg2tdUJG3lVDUe50ihxeX/WkJTPbXQLLDjKoqMIceo\nBPRI/tMu8WCldhqgMUJEkvnl/+eieTwuRsuz6ctZEbiySDHG6YfOaaqrykJQ7Y8T\nw+6p5ECEvQKBgBWoU76m5zcjR9n/BEvAbicb5sNMg50GEXVNo9Yq5xmb4VCnbXwS\n6cTiRVGE/dVz8Ze2nzKflDa024FPxFhGO0tXM3n0m9kxRPrwcyCLkwGB/ChMqdYm\nHGOOBrNVCR2rtcLPg6A8Eu6cdYOr8HxFiXnJNZB/qjAHI0i97hhpxiBJAoGAQbh/\nP5T6Vis2hKETfG1140HjcJrLM7BK1GBMNRdT3y6xEeGh9CbaK+EP+tkztCZhoIHQ\ndrY+NVQG6YKS7WifwkqCkEvQeAofNdgVZRRp3lC6+FOkoYUpn4bh7OfF9nHEIsuI\nLqZdZjngtRaas12B6fJWCajPVn7ipWdxgXsVQ4UCgYBjXapwXdC2g6iTx8u57H1A\neUnr7z7f/PUyuxxiS8sl2kceaCLDqkIeC8ND+YrIN+7Srlp9/CxzVDjfO8/FCj0J\nrVeDhVfTH+7GogsnMWPjDYKyc+TCfW2to2RSyw04XDndxLg8ijYg4hOyWd+2m5Q0\nm7OA/ca4R7J+ReV0mygXLg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "django-storage-service-account@coverme-392221.iam.gserviceaccount.com",
+  "client_id": "101235062616855761665",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/django-storage-service-account%40coverme-392221.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

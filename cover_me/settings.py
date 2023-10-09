@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import json
 import environ
 from pathlib import Path
 from google.oauth2 import service_account
+from google.auth.exceptions import DefaultCredentialsError
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -143,11 +145,16 @@ LOGOUT_REDIRECT_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'jsonGCS', 'coverme-392221-d98a61610b4c.json')
+
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.environ.get('GS_CREDENTIALS')
-)
+if os.path.exists(SERVICE_ACCOUNT_FILE):
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE
+    )
+else:
+    GS_CREDENTIALS = None
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
