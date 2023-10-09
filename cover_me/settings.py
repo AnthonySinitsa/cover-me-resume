@@ -145,10 +145,12 @@ LOGOUT_REDIRECT_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+SERVICE_ACCOUNT_FILE = os.path.join(Path(__file__).resolve().parent.parent, 'service-account.json')
+
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    json.loads(os.environ.get('GS_CREDENTIALS'))
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE
 )
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
