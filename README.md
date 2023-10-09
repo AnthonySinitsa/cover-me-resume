@@ -2,8 +2,6 @@
 
 ## TODO
 
-add a results button to the nav
-
 add an about page
 
 add a bug tracker
@@ -173,6 +171,8 @@ Review the database's transaction isolation level settings to ensure that it is 
 ```
 
 ## DONE
+
+DONE: add a results button to the nav
 
 DONE: User Registration
 
