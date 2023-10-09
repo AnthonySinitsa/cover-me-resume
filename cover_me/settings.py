@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import json
 import environ
 import django_heroku
 from pathlib import Path
@@ -149,9 +150,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.environ.get('GS_CREDENTIALS')
-)
+GS_CREDENTIALS_JSON = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+if GS_CREDENTIALS_JSON:
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(json.loads(GS_CREDENTIALS_JSON))
+else:
+    GS_CREDENTIALS = None
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
