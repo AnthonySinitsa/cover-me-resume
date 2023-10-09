@@ -121,3 +121,5 @@ node_modules/
 
 # poetry
 poetry.lock
+
+service-account.json
