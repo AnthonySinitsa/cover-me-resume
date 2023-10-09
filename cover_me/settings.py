@@ -147,12 +147,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-try:
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-        json.loads(os.environ.get('GS_CREDENTIALS', '{}'))
-    )
-except DefaultCredentialsError:
-    GS_CREDENTIALS = None
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    json.loads(os.environ.get('GS_CREDENTIALS'))
+)
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
