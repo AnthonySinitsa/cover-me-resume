@@ -145,7 +145,7 @@ LOGOUT_REDIRECT_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-SERVICE_ACCOUNT_FILE = 'service-account.json'
+SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'jsonGCS', 'coverme-392221-d98a61610b4c.json')
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
