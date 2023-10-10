@@ -10,11 +10,6 @@ display the users username to show which account they are using
 
 email verification: email should thank the user for creating an account with us
 
-Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
-
-Styling: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
-
-Deploy :D
 
 ## If it ain't broke don't fix it section
 
@@ -76,101 +71,25 @@ Terminal 3:
 $ celery -A cover_me worker --loglevel=info
 ```
 
-## Other To-do's
+## Making changes and deploying to production
 
-```,
-for this step:
-Upload the key to your server: If your Django project is running on a server, you'll need to securely upload this .json file to your server.
-is this assuming the website is deployed?
-ChatGPT
-Yes, the step to upload the key to your server assumes that your Django project is deployed on a remote server. If you're currently working on your local development machine, you can simply store the .json file in a secure location on your local system and provide the local path to it in GS_CREDENTIALS.
+1. Make any necessary changes
 
-However, when you do deploy your Django project to a production server, you'll need to transfer the .json service account key to the server and adjust the GS_CREDENTIALS path accordingly.
+2. add and commit the changes
 
-Additionally, always remember:
+3. push the changes to github
 
-Never commit the .json service account key to version control (like Git). It contains sensitive credentials.
-When deploying, ensure that only the necessary personnel or processes can read the .json file, as it provides access to your Google Cloud Storage. This usually means setting tight file permissions on it.
-```
+4. push the changes to heroku using this command:
 
-1. Test:
-Before deploying, test the file uploads locally to ensure they're being uploaded to GCS.
-
-1. Clean-up:
-Remember to adjust permissions on your GCS bucket to ensure that only the required entities can read or write to it. Avoid making it public unless necessary.
-
-1. Going further:
-You can configure the django-storages backend to use different storage classes, enable automatic file overwriting, or specify a custom location (sub-directory) within your bucket.
-Consider enabling HTTPS for your bucket if you're serving user-facing content.
-Regularly review and manage storage costs. GCS charges for storage space, network costs, and operations.
-By following these steps, you should have your Django application storing files on GCS!
-
-```,
-1. Setting up the React Frontend:
-New Repository: You can create a new repository for the React frontend. This keeps your frontend and backend codebases separate, which can be beneficial for development, especially if different teams are working on each part.
-
-Create React App: Use Create React App (CRA) to set up a new React project:
-
-bash
-Copy code
-npx create-react-app my-react-frontend
-API Calls: Your React frontend will communicate with your Django backend using HTTP API calls. To make these calls, you can use libraries like axios or the built-in fetch API.
-
-2. Setting up the Django Backend:
-Django REST Framework: If not already set up, consider using the Django REST framework (DRF) to transform your Django application into an API that your React frontend can consume.
-
-CORS Headers: To handle Cross-Origin Resource Sharing (CORS) and allow your React frontend to make requests to your Django backend, you'll need to install django-cors-headers:
-
-bash
-Copy code
-pip install django-cors-headers
-Then, add it to your INSTALLED_APPS and MIDDLEWARE in settings.py, and configure the origins that are allowed to access your backend.
-
-3. Connecting Frontend to Backend:
-Environment Variables: Use environment variables or a configuration file in your React app to store the base URL of your Django API. This way, when you switch between development, staging, and production, you can easily change the API's URL without modifying the code.
-
-API Calls: When making API calls from your React app, use the base URL from your environment variables, followed by the specific endpoint you want to access.
-
-4. Deployment:
-Separate Deployment:
-
-Backend: Deploy your Django application as you would normally, for instance, using a platform like Heroku, DigitalOcean, AWS, etc.
-Frontend: Deploy your React application to platforms specialized for static sites, like Netlify, Vercel, or even Amazon S3.
-Combined Deployment:
-
-You can also serve your React app as static files from Django. After building your React app (npm run build), you can copy the build files to Django's static directory and serve them. This method is less common because it couples the frontend and backend deployments.
-Domain Configuration:
-
-Separate Subdomains: For example, use api.mywebsite.com for your Django backend and www.mywebsite.com for your React frontend.
-Same Domain: If using the same domain, you can use a path for the API, like mywebsite.com/api/.
-5. Considerations:
-State Management: As your React app grows, consider using state management solutions like Redux or React Context API to manage the state of your application more efficiently.
-Authentication: If you have authentication in your Django app, consider using token-based authentication (e.g., JWT) to authenticate your React app with the Django backend.
-Real-time Communication: If needed, consider using technologies like WebSockets (e.g., Django Channels) for real-time features.
-```
-
-```,
-Locking Mechanism:
-
-Implement a locking mechanism to ensure that only one scraping task can be executed at a time for a given user, or consider using a queuing mechanism to queue scraping tasks for execution one after the other.
-Database Indexing:
-
-Ensure that the database tables are indexed properly to handle read and write operations efficiently, especially in a concurrent environment.
-Testing Concurrency:
-
-Test the application under a concurrent load to identify and fix any potential issues that could arise from concurrent operations.
-Monitoring and Logging:
-
-Enhance monitoring and logging to capture detailed information about the system's behavior under concurrent operations. This will be helpful for identifying and diagnosing issues.
-AsyncIO:
-
-Since you are using asyncio, ensure that all async operations are properly handled, and avoid blocking the event loop. Make sure that database operations are not blocking the event loop.
-Database Isolation Level:
-
-Review the database's transaction isolation level settings to ensure that it is configured to handle concurrent transactions appropriately.
-```
+5. $ git push heroku main
 
 ## DONE
+
+DONE: Deploy :D
+
+DONE: Styling: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
+
+KINDA DONE: Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
 
 DONE: add a results button to the nav
 
