@@ -207,51 +207,56 @@ def generate_cover_letter(request, job_index):
   # Render the cover letter on a new page or however you wish to display it.
   return render(request, 'cover_letter_page.html', {'cover_letter': cover_letter})
 
+logger = logging.getLogger(__name__)
 
 @login_required
 def download_cover_letter(request, cover_letter_id=None):
-  # If cover_letter_id is provided, it means we are serving an already-saved PDF
-  if cover_letter_id:
-    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
-    pdf = cover_letter.pdf_file.read()
+  try:
+    # If cover_letter_id is provided, it means we are serving an already-saved PDF
+    if cover_letter_id:
+      cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id)
+      pdf = cover_letter.pdf_file.read()
 
-    # Extract the custom filename from the stored file name
-    custom_filename = cover_letter.pdf_file.name.split("/")[-1].rsplit("_", 1)[0]
+      # Extract the custom filename from the stored file name
+      custom_filename = cover_letter.pdf_file.name.split("/")[-1].rsplit("_", 1)[0]
 
-    # Serve the PDF as a response
+      # Serve the PDF as a response
+      response = HttpResponse(pdf, content_type='application/pdf')
+      response['Content-Disposition'] = f'attachment; filename="{custom_filename}.pdf"'
+      return response
+
+    # If cover_letter_id is not provided, we generate the PDF on-the-fly
+    cover_letter_text = request.POST.get('cover_letter_text')
+
+    # Retrieve the custom filename from POST data
+    custom_filename = request.POST.get('cover_letter_filename', 'Cover_Letter')
+
+    # Convert newline characters to <br> for proper HTML rendering
+    cover_letter_html = cover_letter_text.replace('\n', '<br>')
+
+    # Add the configuration for wkhtmltopdf here
+    path_wkhtmltopdf = '/app/bin/wkhtmltopdf'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+    # Convert the HTML to PDF
+    pdf = pdfkit.from_string(cover_letter_html, False, configuration=config)
+
+    # Save the generated PDF to the database with the custom filename
+    cover_letter_record = CoverLetter(
+      user=request.user, 
+      content=cover_letter_text,  # <-- This line saves the text content
+      pdf_file=ContentFile(pdf, name=f"{custom_filename}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+    )
+
+    cover_letter_record.save()
+
+    # Serve the generated PDF as a response using the custom filename
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{custom_filename}.pdf"'
     return response
-
-  # If cover_letter_id is not provided, we generate the PDF on-the-fly
-  cover_letter_text = request.POST.get('cover_letter_text')
-
-  # Retrieve the custom filename from POST data
-  custom_filename = request.POST.get('cover_letter_filename', 'Cover_Letter')
-
-  # Convert newline characters to <br> for proper HTML rendering
-  cover_letter_html = cover_letter_text.replace('\n', '<br>')
-
-  # Add the configuration for wkhtmltopdf here
-  path_wkhtmltopdf = '/app/bin/wkhtmltopdf'
-  config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-
-  # Convert the HTML to PDF
-  pdf = pdfkit.from_string(cover_letter_html, False, configuration=config)
-
-  # Save the generated PDF to the database with the custom filename
-  cover_letter_record = CoverLetter(
-    user=request.user, 
-    content=cover_letter_text,  # <-- This line saves the text content
-    pdf_file=ContentFile(pdf, name=f"{custom_filename}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
-  )
-
-  cover_letter_record.save()
-
-  # Serve the generated PDF as a response using the custom filename
-  response = HttpResponse(pdf, content_type='application/pdf')
-  response['Content-Disposition'] = f'attachment; filename="{custom_filename}.pdf"'
-  return response
+  except Exception as e:
+    logger.exception('An error accurred while generating the PDF: %s', e)
+    raise e
 
 
 @login_required
