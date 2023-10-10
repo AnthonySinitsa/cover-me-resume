@@ -6,6 +6,8 @@
         <h2>Edit Cover Letter</h2>
         {% csrf_token %}
         {{ form.as_p }}
+        <label for="cover_letter_filename">Title:</label>
+        <input type="text" id="cover_letter_filename" name="cover_letter_filename" value="{{ title }}">
         <button type="submit">Save Changes</button>
     </form>
 </div>

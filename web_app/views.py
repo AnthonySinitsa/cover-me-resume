@@ -219,6 +219,7 @@ def download_cover_letter(request, cover_letter_id=None):
 
       # Extract the custom filename from the stored file name
       custom_filename = cover_letter.pdf_file.name.split("/")[-1].rsplit("_", 1)[0]
+      # custom_filename = cover_letter.title
 
       # Serve the PDF as a response
       response = HttpResponse(pdf, content_type='application/pdf')
@@ -235,7 +236,7 @@ def download_cover_letter(request, cover_letter_id=None):
     cover_letter_html = cover_letter_text.replace('\n', '<br>')
 
     # Add the configuration for wkhtmltopdf here
-    path_wkhtmltopdf = os.environ.get('WKHTMLTOPDF_PATH', '/app/bin/wkhtmltopdf')
+    path_wkhtmltopdf = os.environ.get('WKHTMLTOPDF_PATH', '/bin/wkhtmltopdf')
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
     # Convert the HTML to PDF
@@ -293,13 +294,37 @@ def delete_account(request):
 @login_required
 def edit_cover_letter(request, letter_id):
   cover_letter = get_object_or_404(CoverLetter, id=letter_id, user=request.user)
+  filename = cover_letter.pdf_file.name.split("/")[-1].rsplit("_", 1)[0]
 
   if request.method == 'POST':
     form = EditCoverLetterForm(request.POST, instance=cover_letter)
     if form.is_valid():
+      # Get updated text content from the form
+      updated_content = form.cleaned_data['content']
+
+      # Convert updated content to HTML for PDF generation
+      updated_content_html = updated_content.replace('\n', '<br>')
+
+      # Generate new PDF with updated content
+      path_wkhtmltopdf = os.environ.get('WKHTMLTOPDF_PATH', '/bin/wkhtmltopdf')
+      config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+      updated_pdf = pdfkit.from_string(updated_content_html, False, configuration=config)
+
+      user_provided_title = request.POST.get('cover_letter_filename')
+
+      # Check if the user provided a title; if not, use a default
+      custom_filename = user_provided_title if user_provided_title else "Cover_Letter"
+
+      cover_letter.pdf_file.save(
+        f"{custom_filename}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf",
+        ContentFile(updated_pdf)
+      )
+      
       form.save()
       # Redirect to profile or another page after successful edit
       return redirect('profile')
   else:
     form = EditCoverLetterForm(instance=cover_letter)
-  return render(request, 'edit_cover_letter.html', {'form': form})
+    
+  context = {'form': form, 'title': filename}
+  return render(request, 'edit_cover_letter.html', context)
