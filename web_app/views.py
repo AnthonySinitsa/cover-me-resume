@@ -235,7 +235,7 @@ def download_cover_letter(request, cover_letter_id=None):
     cover_letter_html = cover_letter_text.replace('\n', '<br>')
 
     # Add the configuration for wkhtmltopdf here
-    path_wkhtmltopdf = '/app/bin/wkhtmltopdf'
+    path_wkhtmltopdf = os.environ.get('WKHTMLTOPDF_PATH', '/app/bin/wkhtmltopdf')
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
     # Convert the HTML to PDF
