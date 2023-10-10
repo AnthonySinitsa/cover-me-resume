@@ -163,7 +163,8 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 SCRAPFLY_KEY = os.environ.get('SCRAPFLY_KEY')
 
 # Celery configurations
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
