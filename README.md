@@ -10,7 +10,6 @@ display the users username to show which account they are using
 
 email verification: email should thank the user for creating an account with us
 
-
 ## If it ain't broke don't fix it section
 
 the user input isn't being concatinated with a '+' character
