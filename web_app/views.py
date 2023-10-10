@@ -232,8 +232,12 @@ def download_cover_letter(request, cover_letter_id=None):
   # Convert newline characters to <br> for proper HTML rendering
   cover_letter_html = cover_letter_text.replace('\n', '<br>')
 
+  # Add the configuration for wkhtmltopdf here
+  path_wkhtmltopdf = '/app/bin/wkhtmltopdf'
+  config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
   # Convert the HTML to PDF
-  pdf = pdfkit.from_string(cover_letter_html, False)
+  pdf = pdfkit.from_string(cover_letter_html, False, configuration=config)
 
   # Save the generated PDF to the database with the custom filename
   cover_letter_record = CoverLetter(
