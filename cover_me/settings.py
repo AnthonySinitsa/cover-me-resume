@@ -150,14 +150,20 @@ SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'jsonGCS', 'coverme-392221-d98a616
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-if os.path.exists(SERVICE_ACCOUNT_FILE):
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE
-    )
+# if os.path.exists(SERVICE_ACCOUNT_FILE):
+#     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#         SERVICE_ACCOUNT_FILE
+#     )
+# else:
+#     GS_CREDENTIALS = None
+
+if 'GOOGLE_APPLICATION_CREDENTIALS_JSON' in os.environ:
+    credentials_json = json.loads(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_json)
+# If it's not available, handle the error appropriately
 else:
     GS_CREDENTIALS = None
-
-GOOGLE_APPLICATION_CREDENTIALS_JSON = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+    print("No credentials available")
 
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
