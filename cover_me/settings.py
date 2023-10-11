@@ -156,6 +156,9 @@ if os.path.exists(SERVICE_ACCOUNT_FILE):
     )
 else:
     GS_CREDENTIALS = None
+
+GOOGLE_APPLICATION_CREDENTIALS_JSON = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
