@@ -82,58 +82,6 @@ $ celery -A cover_me worker --loglevel=info
 
 5. $ git push heroku main
 
-## DONE
+## LICENSE
 
-DONE: Deploy :D
-
-DONE: Styling: Add CSS and JavaScript to enhance the look and user experience of your website. Consider using frontend frameworks/libraries like Bootstrap, or React
-
-KINDA DONE: Tests: test to ensure the functionality of site. Django's built-in testing framework can be very helpful.
-
-DONE: add a results button to the nav
-
-DONE: User Registration
-
-DONE: Resume Uploader: for the most part finished, just need add resume to database
-
-DONE: Add a profile page that will display all the resumes user has entered
-
-DONE: Job Scraper Integration: If your scraper is ready, integrate it so that it runs after a user uploads their resume. The scraped job postings can be stored in the JobPost model.
-
-DONE: Display Scraped Job Postings: Create a view and template to display the scraped job postings to the user. Allow users to select which job they're interested in.
-
-DONE: Cover Letter Generation with ChatGPT: Once a user selects a job, use the job description and the user's resume to generate a cover letter using ChatGPT. This might involve integrating with OpenAI's API or using a local ChatGPT model, depending on your setup.
-
-DONE: Add to profile page to show all the cover letters generated
-
-DONE: Add a page for user to enter job and location to start the scraper
-
-DONE: When running the scraper it shouldn't take you immediately to the results page as it will display the previous results
-
-DONE: Add loading screen/bar till the scraper finishes
-
-DONE: fix up the job-results page to have a nav bar at top
-
-DONE: add option to delete account
-
-DONE: BEFORE DEPLOYMENT: add media files that user inputs be handled by a web server or cloud storage service. web server - Nginx or service - Amazon S3 or Google Cloud
-
-DONE: change so that the user can only have one resume, new upload overwrites the old resume
-
-DONE: when editing the cover letter, have an option to name the cover letter file, default it to Cover_Letter
-
-DONE: add an edit button to the cover letter in the profile page
-
-DONE: when redownloading the cover letter, the name should be the same as it is displayed in the profile
-
-DONE: Don't have an Upload Resume section in the nav, just put the resume upload in the home page
-
-DONE: error with generating a cover letter
-
-DONE: multiple resumes can now be added, change back to only have one resume
-
-DONE: make sure job search is specific to each user
-
-DONE: Make sure company overview link works
-
-DONE: fix generate cover letter button
+[license](LICENSE.md)
