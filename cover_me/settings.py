@@ -150,6 +150,7 @@ SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'jsonGCS', 'coverme-392221-d98a616
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
+#UNCOMMENT ME FOR LOCAL TESTING
 # if os.path.exists(SERVICE_ACCOUNT_FILE):
 #     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
 #         SERVICE_ACCOUNT_FILE
@@ -157,6 +158,7 @@ GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
 # else:
 #     GS_CREDENTIALS = None
 
+#UNCOMMENT ME FOR DEPLOYMENT
 if 'GOOGLE_APPLICATION_CREDENTIALS_JSON' in os.environ:
     credentials_json = json.loads(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
     GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_json)
