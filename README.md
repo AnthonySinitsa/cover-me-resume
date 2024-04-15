@@ -1,5 +1,7 @@
 # Cover-My-Resume
 
+Cover My Resume is a webstite that utilizes AI and other tools generate a specialized cover letter using a scrapped job description of your choosing and your inputted resume.
+
 ## TODO
 
 add an about page
