@@ -2,19 +2,10 @@
 
 Cover My Resume is a webstite that utilizes AI and other tools generate a specialized cover letter using a scrapped job description of your choosing and your inputted resume.
 
-## TODO
-
-add an about page
-
-add a bug tracker
-
-display the users username to show which account they are using
-
-email verification: email should thank the user for creating an account with us
-
-## If it ain't broke don't fix it section
-
-the user input isn't being concatinated with a '+' character
+![1](images/1.png)
+![2](images/2.png)
+![3](images/3.png)
+![4](images/4.png)
 
 ## SETUP
 
